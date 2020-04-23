@@ -1,0 +1,34 @@
+Package: QCnormSE
+Type: Package
+Title: Quality Control of Normalized Gene Expression Data
+Version: 0.99.0
+Authors@R: person("Silke", "Szymczak", email = "szymczak@medinfo.uni-kiel.de",
+                  role = c("aut", "cre"))
+Description: Implementation of several quality control procedures and processing 
+    steps for normalized gene expression data sets from microarray and RNA-seq
+    experiments in a common framework. It heavily builds upon existing CRAN and
+    Bioconductor packages.
+License: GPL-3
+Encoding: UTF-8
+LazyData: true
+Imports: 
+    affyio,
+    aplpack,
+    BiocGenerics,
+    caret,
+    DESeq2,
+    doppelgangR,
+    GEOquery,
+    GGally,
+    ggplot2,
+    ggpubr,
+    gPCA,
+    Hmisc,
+    illuminaio,
+    methods,
+    rlang,
+    S4Vectors,
+    SummarizedExperiment,
+    stats,    
+    tidyr
+RoxygenNote: 6.1.1
