@@ -25,21 +25,25 @@ plot_distribution <- function(se,
                               assay = 1,
                               method = "quantileplot",
                               return.outliers = TRUE,
-                              coef = 5) {
+                              coef = 5,
+                              title = "Distribution of expression values in each sample") {
 
     if (is.character(assay) && !(assay %in% names(assays(se)))) {
         stop(paste("assay", assay, "not found!"))
     }
     expr = assays(se)[[assay]]
 
-    quant = t(apply(expr, 2, quantile))
+    quant = t(apply(expr, 2, quantile, na.rm = TRUE))
     colnames(quant) = c("min", "lower", "middle", "upper", "max")
 
     if (method == "quantileplot") {
         prob = seq(0, 1, 0.1)
-        quant.for.plot = data.frame(quantile = factor(prob),
+        quant.for.plot = data.frame(quantile =
+                                        factor(prob,
+                                               levels = sort(prob,
+                                                             decreasing = TRUE)),
                                     apply(expr, 2, quantile,
-                                          probs = prob))
+                                          probs = prob, na.rm = TRUE))
         showPoints = ifelse(ncol(se) < 50, TRUE, FALSE)
 
         g = ggparcoord(data = quant.for.plot,
@@ -51,6 +55,7 @@ plot_distribution <- function(se,
             scale_colour_viridis_d() +
             xlab("samples") +
             ylab("expression value") +
+            ggtitle(title) +
             theme_pubr() +
             theme(legend.position = "right",
                   #              axis.title.x = element_blank(),
@@ -83,10 +88,10 @@ plot_distribution <- function(se,
 
 
     } else if (method == "violinplot") {
-        expr.long = gather(data.frame(expr),
-                           "sample",
-                           "value",
-                           colnames(expr))
+        expr.long = na.omit(gather(data.frame(expr, check.names = FALSE),
+                                   "sample",
+                                   "value",
+                                   colnames(expr)))
 
         g = ggviolin(data = expr.long,
                      x = "sample",
@@ -110,6 +115,9 @@ plot_distribution <- function(se,
                            coef = coef)
     out.all = union(out.med, out.iqr)
     if (length(out.all) > 0) {
+        if (is.null(colnames(se))) {
+            stop("se needs to have colnames")
+        }
         info.out = data.frame(id = colnames(se)[out.all],
                               criterion = rep("distribution", length(out.all)),
                               stringsAsFactors = FALSE)

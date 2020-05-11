@@ -25,7 +25,9 @@ expression data to be used for dimensionality reduction.}
 (default: FALSE).}
 }
 \value{
-data.frame with components of PCA or MDS analysis.
+list with components scores (data.frame with components of PCA or
+MDS analysis) and var.explained (vector with explained variance; only for
+PCA).
 }
 \description{
 Performs dimensionality reduction using multi-dimensional scaling (MDS) or

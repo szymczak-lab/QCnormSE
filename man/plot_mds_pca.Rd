@@ -4,13 +4,12 @@
 \alias{plot_mds_pca}
 \title{MDS or PCA plot}
 \usage{
-plot_mds_pca(scores, var.color = NULL, palette = NULL,
-  var.shape = NULL, title = NULL, return.outliers = TRUE,
+plot_mds_pca(res, var.color = NULL, palette = NULL, var.shape = NULL,
+  shape.values = NULL, title = NULL, return.outliers = TRUE,
   factor = 5)
 }
 \arguments{
-\item{scores}{data.frame. Components of PCA or MDS analysis as estimated by
-\code{\link{calculate_mds_pca}}.}
+\item{res}{data.frame. Output of \code{\link{calculate_mds_pca}}.}
 
 \item{var.color}{Character or integer vector. Variable used to determine
 color. If NULL black color will be used for all samples.}
@@ -20,6 +19,9 @@ color. If NULL black color will be used for all samples.}
 
 \item{var.shape}{Character or integer vector. Variable used to determine
 shape. If NULL filled circles will be used for all samples.}
+
+\item{shape.values}{Vector with symbols. Needs to provide a symbol for each
+unique value of var.shape.}
 
 \item{title}{Character. Title of the plot. If NULL title will be set based on
 method.}

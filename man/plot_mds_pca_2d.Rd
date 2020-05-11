@@ -4,11 +4,12 @@
 \alias{plot_mds_pca_2d}
 \title{MDS or PCA plot (2D)}
 \usage{
-plot_mds_pca_2d(scores, dim, se, var.color = NULL, palette = NULL,
-  var.shape = NULL)
+plot_mds_pca_2d(res, dim, se, var.color = NULL, palette = NULL,
+  var.shape = NULL, shape.values = NULL, title = NULL,
+  ellipse = FALSE, ellipse.type = "convex")
 }
 \arguments{
-\item{scores}{data.frame. Components of PCA or MDS analysis as estimated by
+\item{res}{data.frame. Output of \code{\link{calculate_mds_pca}}.
 \code{\link{calculate_mds_pca}}.}
 
 \item{dim}{Numeric vector (2). Numbers of components to be plotted.}
@@ -24,6 +25,17 @@ color. If NULL black color will be used for all samples.}
 
 \item{var.shape}{Character. Name of variable used to determine
 shape. If NULL filled circles will be used for all samples.}
+
+\item{shape.values}{Vector with symbols. Needs to provide a symbol for each
+unique value of var.shape.}
+
+\item{title}{Character. Main title of plot.}
+
+\item{ellipse}{Logical. Should ellipses around points be drawn? (default:
+FALSE).}
+
+\item{ellipse.type}{Character. Type of ellipse as given in
+\code{\link[ggpubr]{ggscatter}} (default: "convex").}
 }
 \description{
 Plots two sepcified components estimated with the function

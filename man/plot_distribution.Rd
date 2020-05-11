@@ -5,7 +5,8 @@
 \title{Plot distribution of expression values for each sample}
 \usage{
 plot_distribution(se, assay = 1, method = "quantileplot",
-  return.outliers = TRUE, coef = 5)
+  return.outliers = TRUE, coef = 5,
+  title = "Distribution of expression values in each sample")
 }
 \arguments{
 \item{se}{\code{\link[SummarizedExperiment]{RangedSummarizedExperiment-class}}

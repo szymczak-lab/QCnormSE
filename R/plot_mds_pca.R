@@ -15,7 +15,9 @@
 #' @param scale Logical. Should the data be scaled by standard deviation?
 #' (default: FALSE).
 #'
-#' @return data.frame with components of PCA or MDS analysis.
+#' @return list with components scores (data.frame with components of PCA or
+#' MDS analysis) and var.explained (vector with explained variance; only for
+#' PCA).
 #'
 #' @importFrom stats cmdscale dist na.omit prcomp
 #' @export
@@ -46,6 +48,7 @@ calculate_mds_pca <- function(se,
                      center = FALSE,
                      scale = FALSE)
         scores = res$x[, 1:3]
+        var.explained = (res$sdev^2)[1:3] / sum(res$sdev^2)
 
     } else if (method == "mds") {
 
@@ -57,6 +60,7 @@ calculate_mds_pca <- function(se,
         d = dist(t(expr))
         fit = cmdscale(d, eig = TRUE, k = 3)
         scores = fit$points
+        var.explained = NULL
 
     } else {
         stop(paste("method", method, "not known!"))
@@ -65,7 +69,8 @@ calculate_mds_pca <- function(se,
 #    colnames(scores) = paste("component",
 #                             seq_len(ncol(scores)),
 #                             sep = ".")
-    return(scores)
+    return(list(scores = scores,
+                var.explained = var.explained))
 }
 
 #' MDS or PCA plot
@@ -73,14 +78,15 @@ calculate_mds_pca <- function(se,
 #' Plots components estimated with the function \code{\link{calculate_mds_pca}}.
 #' Color and shape of each sample can be set based on different variables.
 #'
-#' @param scores data.frame. Components of PCA or MDS analysis as estimated by
-#' \code{\link{calculate_mds_pca}}.
+#' @param res data.frame. Output of \code{\link{calculate_mds_pca}}.
 #' @param var.color Character or integer vector. Variable used to determine
 #' color. If NULL black color will be used for all samples.
 #' @param palette Color palette to be used (default palette from
 #' \code{\link[ggpubr]{get_palette}}).
 #' @param var.shape Character or integer vector. Variable used to determine
 #' shape. If NULL filled circles will be used for all samples.
+#' @param shape.values Vector with symbols. Needs to provide a symbol for each
+#' unique value of var.shape.
 #' @param title Character. Title of the plot. If NULL title will be set based on
 #' method.
 #' @param return.outliers Logical. Return info about outlier samples.
@@ -94,35 +100,39 @@ calculate_mds_pca <- function(se,
 #' @importFrom aplpack compute.bagplot
 #' @export
 
-plot_mds_pca <- function(scores,
+plot_mds_pca <- function(res,
                          var.color = NULL,
                          palette = NULL,
                          var.shape = NULL,
+                         shape.values = NULL,
                          title = NULL,
                          return.outliers = TRUE,
                          factor = 5) {
 
     ## set title to method (set based on colnames of scores)
-    method = ifelse(grepl("^PC", colnames(scores)[1]),
-                    "PCA", "MDS")
+#    method = ifelse(grepl("^PC", colnames(scores)[1]),
+    method = ifelse(!is.null(res$var.explained), "PCA", "MDS")
     if (is.null(title)) title = method
 
     ## plots
-    plots.l = list(plot_mds_pca_2d(scores = scores,
+    plots.l = list(plot_mds_pca_2d(res = res,
                                    dim = 1:2,
                                    var.color = var.color,
                                    palette = palette,
-                                   var.shape = var.shape),
-                   plot_mds_pca_2d(scores = scores,
+                                   var.shape = var.shape,
+                                   shape.values = shape.values),
+                   plot_mds_pca_2d(res = res,
                                    dim = c(1, 3),
                                    var.color = var.color,
                                    palette = palette,
-                                   var.shape = var.shape),
-                   plot_mds_pca_2d(scores = scores,
+                                   var.shape = var.shape,
+                                   shape.values = shape.values),
+                   plot_mds_pca_2d(res = res,
                                    dim = 2:3,
                                    var.color = var.color,
                                    palette = palette,
-                                   var.shape = var.shape))
+                                   var.shape = var.shape,
+                                   shape.values = shape.values))
 
     legend = ifelse(is.null(var.color) & is.null(var.shape),
                     "none", "bottom")
@@ -140,13 +150,13 @@ plot_mds_pca <- function(scores,
 
 
     if (return.outliers) {
-        info.out = rbind(get_outliers_mds_pca_2d(scores = scores,
+        info.out = rbind(get_outliers_mds_pca_2d(scores = res$scores,
                                                  dim = 1:2,
                                                  factor = factor),
-                         get_outliers_mds_pca_2d(scores = scores,
+                         get_outliers_mds_pca_2d(scores = res$scores,
                                                  dim = c(1, 3),
                                                  factor = factor),
-                         get_outliers_mds_pca_2d(scores = scores,
+                         get_outliers_mds_pca_2d(scores = res$scores,
                                                  dim = 2:3,
                                                  factor = factor))
         return(info.out)
@@ -160,7 +170,7 @@ plot_mds_pca <- function(scores,
 #' \code{\link{calculate_mds_pca}}. Color and shape of each sample can be set
 #' based on different variables.
 #'
-#' @param scores data.frame. Components of PCA or MDS analysis as estimated by
+#' @param res data.frame. Output of \code{\link{calculate_mds_pca}}.
 #' \code{\link{calculate_mds_pca}}.
 #' @param dim Numeric vector (2). Numbers of components to be plotted.
 #' @param se \code{\link[SummarizedExperiment]{RangedSummarizedExperiment-class}}
@@ -171,19 +181,44 @@ plot_mds_pca <- function(scores,
 #' \code{\link[ggpubr]{ggscatter}}).
 #' @param var.shape Character. Name of variable used to determine
 #' shape. If NULL filled circles will be used for all samples.
+#' @param shape.values Vector with symbols. Needs to provide a symbol for each
+#' unique value of var.shape.
+#' @param title Character. Main title of plot.
+#' @param ellipse Logical. Should ellipses around points be drawn? (default:
+#' FALSE).
+#' @param ellipse.type Character. Type of ellipse as given in
+#' \code{\link[ggpubr]{ggscatter}} (default: "convex").
 #'
 #' @import ggpubr ggplot2
 #' @export
 
-plot_mds_pca_2d <- function(scores,
+plot_mds_pca_2d <- function(res,
                             dim,
                             se,
                             var.color = NULL,
                             palette = NULL,
-                            var.shape = NULL) {
+                            var.shape = NULL,
+                            shape.values = NULL,
+                            title = NULL,
+                            ellipse = FALSE,
+                            ellipse.type = "convex") {
+    scores = res$scores
 
     xlab = paste("Component", dim[1])
     ylab = paste("Component", dim[2])
+    if (!is.null(res$var.explained)) {
+        var = round(res$var.explained * 100, digits = 2)
+        xlab = paste0(xlab, " (", var[dim[1]], "%)")
+        ylab = paste0(ylab, " (", var[dim[2]], "%)")
+
+        if (is.null(title)) {
+            title = "PCA"
+        }
+    } else {
+        if (is.null(title)) {
+            title = "MDS"
+        }
+    }
 
     ## set color and shape
     info = data.frame(prepare_var_for_plot(se = se,
@@ -201,7 +236,14 @@ plot_mds_pca_2d <- function(scores,
                   shape = colnames(scores)[2],
                   size = 3,
                   xlab = xlab,
-                  ylab = ylab)
+                  ylab = ylab,
+                  title = title,
+                  ellipse = ellipse,
+                  ellipse.type = ellipse.type)
+
+    if (!is.null(shape.values)) {
+        g = g + scale_shape_manual(values = shape.values)
+    }
 
     if (is.null(var.color)) {
         g = g + guides(color = FALSE)
