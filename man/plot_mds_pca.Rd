@@ -4,12 +4,16 @@
 \alias{plot_mds_pca}
 \title{MDS or PCA plot}
 \usage{
-plot_mds_pca(res, var.color = NULL, palette = NULL, var.shape = NULL,
-  shape.values = NULL, title = NULL, return.outliers = TRUE,
-  factor = 5)
+plot_mds_pca(res, se, var.color = NULL, palette = NULL,
+  var.shape = NULL, shape.values = NULL, title = NULL,
+  return.outliers = TRUE, factor = 5, ellipse = FALSE,
+  ellipse.type = "convex")
 }
 \arguments{
 \item{res}{data.frame. Output of \code{\link{calculate_mds_pca}}.}
+
+\item{se}{\code{\link[SummarizedExperiment]{RangedSummarizedExperiment-class}}
+object}
 
 \item{var.color}{Character or integer vector. Variable used to determine
 color. If NULL black color will be used for all samples.}
@@ -30,6 +34,11 @@ method.}
 
 \item{factor}{Numeric. Parameter of the function
 \code{\link[aplpack]{compute.bagplot}}. (default: 5)}
+
+\item{ellipse}{Logical. Should ellipses around points be drawn? (default:
+FALSE).}
+
+\item{ellipse.type}{Character. Type of ellipse as given in}
 }
 \value{
 If return.outliers = TRUE, data.frame with identifiers of outlier

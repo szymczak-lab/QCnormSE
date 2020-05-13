@@ -1,8 +1,8 @@
 
 #' Log transformation
 #'
-#' Performs log transformation of expression values (log2). Values below zero 
-#' will be set to zero and if zero values are available 
+#' Performs log transformation of expression values (log2). Values below zero
+#' will be set to zero and if zero values are available
 #'
 #' @param se \code{\link[SummarizedExperiment]{RangedSummarizedExperiment-class}}
 #' object
@@ -10,18 +10,18 @@
 #' expression data to be log transformed.
 #' @param pseudocount Numeric. Value added to expression values before log
 #' transformation (relevant for count data containing zero values).
-#' 
+#'
 #' @return \code{\link[SummarizedExperiment]{RangedSummarizedExperiment-class}}
-#' object.
-#' 
+#' object with additional assay called <assay>.log.
+#'
 #' @export
 
-log_transform <- function(se, 
+log_transform <- function(se,
                           assay = 1,
                           pseudocount = 1) {
-    
+
     expr = assays(se)[[assay]]
-    
+
     if (any(expr < 0)) {
         expr[expr < 0] = 0
     }
@@ -32,7 +32,7 @@ log_transform <- function(se,
     if (any(is.na(expr) | is.infinite(expr))) {
         stop("missing expression values after log transformation!")
     }
-    assays(se)[[assay]] = expr
-    
+    assays(se)[[paste(assay, "log", sep = ".")]] = expr
+
     return(se)
 }

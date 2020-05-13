@@ -79,6 +79,8 @@ calculate_mds_pca <- function(se,
 #' Color and shape of each sample can be set based on different variables.
 #'
 #' @param res data.frame. Output of \code{\link{calculate_mds_pca}}.
+#' @param se \code{\link[SummarizedExperiment]{RangedSummarizedExperiment-class}}
+#' object
 #' @param var.color Character or integer vector. Variable used to determine
 #' color. If NULL black color will be used for all samples.
 #' @param palette Color palette to be used (default palette from
@@ -92,6 +94,9 @@ calculate_mds_pca <- function(se,
 #' @param return.outliers Logical. Return info about outlier samples.
 #' @param factor Numeric. Parameter of the function
 #' \code{\link[aplpack]{compute.bagplot}}. (default: 5)
+#' @param ellipse Logical. Should ellipses around points be drawn? (default:
+#' FALSE).
+#' @param ellipse.type Character. Type of ellipse as given in
 #'
 #' @return If return.outliers = TRUE, data.frame with identifiers of outlier
 #' samples for each pairwise combination of components.
@@ -101,13 +106,16 @@ calculate_mds_pca <- function(se,
 #' @export
 
 plot_mds_pca <- function(res,
+                         se,
                          var.color = NULL,
                          palette = NULL,
                          var.shape = NULL,
                          shape.values = NULL,
                          title = NULL,
                          return.outliers = TRUE,
-                         factor = 5) {
+                         factor = 5,
+                         ellipse = FALSE,
+                         ellipse.type = "convex") {
 
     ## set title to method (set based on colnames of scores)
 #    method = ifelse(grepl("^PC", colnames(scores)[1]),
@@ -116,23 +124,35 @@ plot_mds_pca <- function(res,
 
     ## plots
     plots.l = list(plot_mds_pca_2d(res = res,
+                                   se = se,
                                    dim = 1:2,
                                    var.color = var.color,
                                    palette = palette,
                                    var.shape = var.shape,
-                                   shape.values = shape.values),
+                                   shape.values = shape.values,
+                                   title = "",
+                                   ellipse = ellipse,
+                                   ellipse.type = ellipse.type),
                    plot_mds_pca_2d(res = res,
+                                   se = se,
                                    dim = c(1, 3),
                                    var.color = var.color,
                                    palette = palette,
                                    var.shape = var.shape,
-                                   shape.values = shape.values),
+                                   shape.values = shape.values,
+                                   title = "",
+                                   ellipse = ellipse,
+                                   ellipse.type = ellipse.type),
                    plot_mds_pca_2d(res = res,
+                                   se = se,
                                    dim = 2:3,
                                    var.color = var.color,
                                    palette = palette,
                                    var.shape = var.shape,
-                                   shape.values = shape.values))
+                                   shape.values = shape.values,
+                                   title = "",
+                                   ellipse = ellipse,
+                                   ellipse.type = ellipse.type))
 
     legend = ifelse(is.null(var.color) & is.null(var.shape),
                     "none", "bottom")
@@ -279,10 +299,13 @@ plot_mds_pca_2d <- function(res,
 prepare_var_for_plot <- function(se,
                                  var = NULL) {
 
-    if (is.null(var) || !(var %in% colnames(colData(se)))) {
+    if (is.null(var)) {
         values = rep(1, ncol(se))
 
     } else {
+        if (!(var %in% colnames(colData(se)))) {
+            stop(paste("var", var, "not found in colnames of colData!"))
+        }
         values = colData(se)[, var]
     }
 

@@ -21,6 +21,8 @@ plotting.}
 \item{return.outliers}{Logical. Return info about outlier samples.}
 
 \item{coef}{Numeric. Used in outlier definition (median +/- coef * IQR)}
+
+\item{title}{Character. Title of the plot.}
 }
 \value{
 If return.outliers = TRUE, data.frame with identifiers of outlier

@@ -33,14 +33,19 @@ extract_geo_characteristics <- function(se, cols = NULL) {
         info.geo.original = pheno[cols, , drop = FALSE]
     }
 
-    ## extract information
-    info.geo = do.call(cbind, apply(info.geo.original, 2, convert))
+    if (all(is.na(info.geo.original))) {
+        warning("no GEO information available!")
+    } else {
 
-    ## convert colnames to syntactically valid variable names
-    colnames(info.geo) = base::make.names(colnames(info.geo))
+        ## extract information
+        info.geo = do.call(cbind, apply(info.geo.original, 2, convert))
 
-    colData(se) = cbind(pheno,
-                        info.geo)
+        ## convert colnames to syntactically valid variable names
+        colnames(info.geo) = base::make.names(colnames(info.geo))
+
+        colData(se) = cbind(pheno,
+                            info.geo)
+    }
     return(se)
 
 }

@@ -18,9 +18,9 @@ transformation (relevant for count data containing zero values).}
 }
 \value{
 \code{\link[SummarizedExperiment]{RangedSummarizedExperiment-class}}
-object.
+object with additional assay called <assay>.log.
 }
 \description{
-Performs log transformation of expression values (log2). Values below zero 
+Performs log transformation of expression values (log2). Values below zero
 will be set to zero and if zero values are available
 }

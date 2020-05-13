@@ -6,7 +6,7 @@
 \usage{
 extract_scan_date(se, temp.dir = tempdir(),
   tryFormats = c("\%Y-\%m-\%d", "\%Y/\%m/\%d", "\%m/\%d/\%Y",
-  "\%d-\%b-\%Y"))
+  "\%m-\%d-\%Y", "\%d-\%b-\%Y"))
 }
 \arguments{
 \item{se}{\code{\link[SummarizedExperiment]{RangedSummarizedExperiment-class}}

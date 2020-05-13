@@ -13,6 +13,7 @@
 #' "boxplot", "violinplot".
 #' @param return.outliers Logical. Return info about outlier samples.
 #' @param coef Numeric. Used in outlier definition (median +/- coef * IQR)
+#' @param title Character. Title of the plot.
 #'
 #' @return If return.outliers = TRUE, data.frame with identifiers of outlier
 #' samples

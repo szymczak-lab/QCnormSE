@@ -66,6 +66,9 @@ get_geo_data <- function(accession,
 
   ## convert to SummarizedExperiment object
   se = as(eset, "SummarizedExperiment")
+  if (nrow(se) == 0) {
+      stop("no expression data found!")
+  }
 
   ## perform log transformation if not already performed
   expr = assays(se)[[1]]
@@ -88,6 +91,11 @@ get_geo_data <- function(accession,
                            temp.dir = temp.dir)
 
   }
+
+  ## remove .ch1* from colnames
+  colnames(colData(se)) = gsub("\\.ch1[0-9_.]*$", "",
+                               colnames(colData(se)))
+
   return(se)
 
   # prepare.sum.exp(se.gene = se.gene, assay = "expr", col.symbol = "symbol",
@@ -120,64 +128,92 @@ extract_scan_date <- function(se,
                               tryFormats = c("%Y-%m-%d",
                                              "%Y/%m/%d",
                                              "%m/%d/%Y",
+                                             "%m-%d-%Y",
                                              "%d-%b-%Y")) {
 
     accession.samples = se$geo_accession
 
-    scan.date.all = NULL
-    for (i in 1:length(accession.samples)) {
+    files.available = vapply(
+        X = accession.samples,
+        FUN = function(x) {
+            temp = getGEOSuppFiles(GEO = x,
+                                   makeDirectory = FALSE,
+                                   fetch_files = FALSE)
+            ifelse(is.null(temp), FALSE, TRUE)
+        },
+        FUN.VALUE = logical(1))
 
-        array.file = dir(temp.dir,
-                         pattern = accession.samples[i],
-                         full.names = TRUE)
+    if (all(!files.available)) {
+        warning("no raw files with scan date available!")
+    } else {
 
-        ## avoid downloading of existing file
-        if (length(array.file) == 0) {
-            getGEOSuppFiles(GEO = accession.samples[i],
-                            makeDirectory = FALSE,
-                            baseDir = temp.dir,
-                            fetch_files = TRUE)
+        scan.date.all = NULL
+        for (i in 1:length(accession.samples)) {
+
             array.file = dir(temp.dir,
                              pattern = accession.samples[i],
                              full.names = TRUE)
-        }
 
-        #    ## example Illumina file
-        #    array.file = system.file("extdata", "idat", "4343238080_A_Grn.idat",
-        #                             package = "IlluminaDataTestFiles")
-
-        if (length(array.file) == 0) {
-            stop(paste("no array file for sample", accession.samples[i],
-                       "found!"))
-        }
-        if (length(array.file) > 1) {
-            stop(paste("more than one array file for sample",
-                       accession.samples[i], "found!"))
-        }
-
-        if (grepl("cel", array.file, ignore.case = TRUE)) {
-            scan.date = as.character(get.celfile.dates(filenames = array.file))
-        } else if (grepl("idat", array.file, ignore.case = TRUE)) {
-            idat = readIDAT(file = array.file)
-            ind = which(idat$RunInfo[, "Name"] == "Scan")[1]
-            if (length(ind) == 0) {
-                stop(paste("no scan date for file", array.file, "found!"))
+            ## avoid downloading of existing file
+            if (length(array.file) == 0) {
+                getGEOSuppFiles(GEO = accession.samples[i],
+                                makeDirectory = FALSE,
+                                baseDir = temp.dir,
+                                fetch_files = TRUE)
+                array.file = dir(temp.dir,
+                                 pattern = accession.samples[i],
+                                 full.names = TRUE)
             }
-            scan.date = idat$RunInfo[ind, "Date"]
-            scan.date = unlist(strsplit(scan.date, " "))[1]
-#            scan.date = as.Date(scan.date, format = "%m/%d/%Y")
-        } else {
-            ## Agilent file (based on GSE32062 with platform GPL6480)
-            temp = unlist(strsplit(readLines(array.file, n = 3)[[3]], "\t"))
-            scan.date = unlist(strsplit(temp[3], " "))[1]
-#            stop(paste("no method available to extract date from filetype",
-#                       array.file))
-        }
-        scan.date.all[i] = scan.date
-    }
 
-    se$scan.date = as.Date(scan.date.all,
-                          tryFormats = tryFormats)
+            #    ## example Illumina file
+            #    array.file = system.file("extdata", "idat", "4343238080_A_Grn.idat",
+            #                             package = "IlluminaDataTestFiles")
+
+            if (length(array.file) == 0) {
+                stop(paste("no array file for sample", accession.samples[i],
+                           "found!"))
+            }
+            if (length(array.file) > 1) {
+                stop(paste("more than one array file for sample",
+                           accession.samples[i], "found!"))
+            }
+
+            if (grepl("cel", array.file, ignore.case = TRUE)) {
+                scan.date = as.character(get.celfile.dates(filenames = array.file))
+            } else if (grepl("idat", array.file, ignore.case = TRUE)) {
+                idat = readIDAT(file = array.file)
+                ind = which(idat$RunInfo[, "Name"] == "Scan")[1]
+                if (length(ind) == 0) {
+                    warning(paste("no scan date for file", array.file, "found!"))
+                }
+                scan.date = idat$RunInfo[ind, "Date"]
+                scan.date = unlist(strsplit(scan.date, " "))[1]
+                #            scan.date = as.Date(scan.date, format = "%m/%d/%Y")
+            } else {
+                ## Agilent file (based on GSE32062 with platform GPL6480)
+                temp = unlist(strsplit(readLines(array.file, n = 3)[[3]], "\t"))
+                scan.date = unlist(strsplit(temp[6], " "))[1]
+                #            stop(paste("no method available to extract date from filetype",
+                #                       array.file))
+            }
+            scan.date.all[i] = scan.date
+        }
+
+        scan.date.formats = lapply(tryFormats, function(x) {
+            as.Date(scan.date.all,
+                    tryFormats = x,
+                    optional = TRUE)
+        })
+        no.na = vapply(X = scan.date.formats,
+                       FUN = function(x) {sum(is.na(x))},
+                       FUN.VALUE = integer(1))
+        ind.min = which.min(no.na)
+        if (no.na[ind.min] > sum(is.na(scan.date.all))) {
+            warning("some dates could not be correctly converted!")
+        }
+
+        se$scan.date = scan.date.formats[[ind.min]]
+    }
     return(se)
 
 }
@@ -204,11 +240,11 @@ extract_detection_pvalue <- function(accession, se) {
     info.col = Columns(gsmlist[[1]])
 
     ## identify column with detection P value
-    ind.det.pval = unique(as.numeric(apply(info.col, 2, function(x) {
-        grep("detect|p-value|pvalue", x, ignore.case = TRUE)})))
+    ind.det.pval = unique(as.numeric(apply(info.col[1], 2, function(x) {
+        grep("detect|p-value|pvalue|pval", x, ignore.case = TRUE)})))
 
     if (length(ind.det.pval) == 0) {
-        stop("no information about detection P value available!")
+        warning("no information about detection P value available!")
     } else {
         if (length(ind.det.pval) > 1) {
             stop(paste("more than one column with detection P value available:",

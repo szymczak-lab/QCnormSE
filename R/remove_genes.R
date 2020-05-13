@@ -1,4 +1,8 @@
 
+## todo:
+## add wrapper to more sophistcated filter functions for RNA-seq data available
+## in DESeq2/edgeR/limma (not sure which package)
+
 #' Remove genes based on different criteria
 #'
 #' Remove genes with no variability (method = "constant"), missing values
