@@ -24,3 +24,8 @@ object with scan date added as column scan.date in colData.
 Extracts date of scanning from original array files (e.g. CEL for Affymetrix
 and idat for Illumina arrays).
 }
+\examples{
+data("se.probeset")
+
+se.probeset = extract_scan_date(se = se.probeset)
+}

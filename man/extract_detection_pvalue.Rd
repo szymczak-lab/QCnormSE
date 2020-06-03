@@ -19,3 +19,9 @@ object with detection P value added as assay with the name detection.pvalue.
 \description{
 Extracts detection P value information from each sample file.
 }
+\examples{
+data("se.probeset")
+
+se.probeset = extract_detection_pvalue(se = se.probeset,
+                                       accession = "GSE6710")
+}

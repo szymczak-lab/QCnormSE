@@ -37,8 +37,24 @@ FALSE).}
 \item{ellipse.type}{Character. Type of ellipse as given in
 \code{\link[ggpubr]{ggscatter}} (default: "convex").}
 }
+\value{
+\code{\link[ggplot2]{ggplot}} object
+}
 \description{
 Plots two sepcified components estimated with the function
 \code{\link{calculate_mds_pca}}. Color and shape of each sample can be set
 based on different variables.
+}
+\examples{
+data("se.gene")
+
+## PCA
+res.pca = calculate_mds_pca(se = se.gene,
+                            method = "pca")
+
+## color code by group
+plot_mds_pca_2d(res = res.pca,
+                dim = 1:2,
+                se = se.gene,
+                var.color = "group")
 }

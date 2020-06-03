@@ -69,11 +69,19 @@ check_batch_effects <- function(se,
 #' object with batch information in additional column in colData()
 #'
 #' @export
+#'
+#' @examples
+#' data("se.gene")
+#' se.gene = define_batches(se = se.gene,
+#'                          col.scan.date = "scan.date")
 
 define_batches <- function(se,
                            col.scan.date = "scan.date",
                            diff.ignore = 1) {
 
+    if (!(col.scan.date %in% colnames(colData(se)))) {
+        stop(paste("column", col.scan.date, "not available in column data!"))
+    }
     scan.date = colData(se)[, col.scan.date]
     names(scan.date) = colnames(se)
     scan.date = sort(scan.date)

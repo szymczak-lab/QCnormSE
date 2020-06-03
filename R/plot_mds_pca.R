@@ -21,6 +21,17 @@
 #'
 #' @importFrom stats cmdscale dist na.omit prcomp
 #' @export
+#'
+#' @examples
+#' data("se.gene")
+#'
+#' ## PCA
+#' res.pca = calculate_mds_pca(se = se.gene,
+#'                             method = "pca")
+#'
+#' ## MDS
+#' res.mds = calculate_mds_pca(se = se.gene,
+#'                             method = "mds")
 
 calculate_mds_pca <- function(se,
                               assay = 1,
@@ -33,6 +44,16 @@ calculate_mds_pca <- function(se,
         stop(paste("assay", assay, "not found!"))
     }
     expr = assays(se)[[assay]]
+
+    if (any(is.na(expr))) {
+        se.reduced = remove_genes(se = se,
+                                  assay = assay,
+                                  method = "missing",
+                                  freq = 0)
+        expr = assays(se.reduced)[[assay]]
+        print(paste("removed", nrow(se) - nrow(se.reduced),
+                    "genes with missing values!"))
+    }
 
     if (center) {
         mean = apply(expr, 1, mean)
@@ -47,8 +68,8 @@ calculate_mds_pca <- function(se,
         res = prcomp(na.omit(t(expr)),
                      center = FALSE,
                      scale = FALSE)
-        scores = res$x[, 1:3]
-        var.explained = (res$sdev^2)[1:3] / sum(res$sdev^2)
+        scores = res$x[, seq_len(3)]
+        var.explained = (res$sdev^2)[seq_len(3)] / sum(res$sdev^2)
 
     } else if (method == "mds") {
 
@@ -104,6 +125,18 @@ calculate_mds_pca <- function(se,
 #' @import ggpubr ggplot2
 #' @importFrom aplpack compute.bagplot
 #' @export
+#'
+#' @examples
+#' data("se.gene")
+#'
+#' ## PCA
+#' res.pca = calculate_mds_pca(se = se.gene,
+#'                             method = "pca")
+#'
+#' ## color code by group
+#' plot_mds_pca(res = res.pca,
+#'              se = se.gene,
+#'              var.color = "group")
 
 plot_mds_pca <- function(res,
                          se,
@@ -125,7 +158,7 @@ plot_mds_pca <- function(res,
     ## plots
     plots.l = list(plot_mds_pca_2d(res = res,
                                    se = se,
-                                   dim = 1:2,
+                                   dim = c(1, 2),
                                    var.color = var.color,
                                    palette = palette,
                                    var.shape = var.shape,
@@ -171,13 +204,13 @@ plot_mds_pca <- function(res,
 
     if (return.outliers) {
         info.out = rbind(get_outliers_mds_pca_2d(scores = res$scores,
-                                                 dim = 1:2,
+                                                 dim = c(1, 2),
                                                  factor = factor),
                          get_outliers_mds_pca_2d(scores = res$scores,
                                                  dim = c(1, 3),
                                                  factor = factor),
                          get_outliers_mds_pca_2d(scores = res$scores,
-                                                 dim = 2:3,
+                                                 dim = c(2, 3),
                                                  factor = factor))
         return(info.out)
     }
@@ -211,6 +244,21 @@ plot_mds_pca <- function(res,
 #'
 #' @import ggpubr ggplot2
 #' @export
+#'
+#' @return \code{\link[ggplot2]{ggplot}} object
+#'
+#' @examples
+#' data("se.gene")
+#'
+#' ## PCA
+#' res.pca = calculate_mds_pca(se = se.gene,
+#'                             method = "pca")
+#'
+#' ## color code by group
+#' plot_mds_pca_2d(res = res.pca,
+#'                 dim = c(1, 2),
+#'                 se = se.gene,
+#'                 var.color = "group")
 
 plot_mds_pca_2d <- function(res,
                             dim,
@@ -290,10 +338,10 @@ plot_mds_pca_2d <- function(res,
 
 
 
-#' internal function used by plot_mds_pca
-#'
-#' if var = NULL returns vector of 1s
-#'
+# internal function used by plot_mds_pca
+#
+# if var = NULL returns vector of 1s
+#
 #' @keywords internal
 
 prepare_var_for_plot <- function(se,
@@ -317,10 +365,10 @@ prepare_var_for_plot <- function(se,
 }
 
 
-#' internal function used by plot_mds_pca
-#'
-#' determines outliers in two dimensional plot
-#'
+# internal function used by plot_mds_pca
+#
+# determines outliers in two dimensional plot
+#
 #' @importFrom aplpack compute.bagplot
 #' @keywords internal
 

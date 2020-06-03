@@ -23,9 +23,27 @@
 #' object with genes removed
 #'
 #' @export
+#'
+#' @examples
+#' data("se.probeset")
+#' print(se.probeset)
+#'
+#' ## remove probesets with missing values
+#' se.probeset.red = remove_genes(se = se.probeset,
+#'                                assay = "exprs.log",
+#'                                method = "missing",
+#'                                freq = 0)
+#' print(se.probeset.red)
+#'
+#' ## remove probesets with low expression
+#' se.probeset.red = remove_genes(se = se.probeset,
+#'                                assay = "detection.pvalue",
+#'                                method = "detection.pvalue",
+#'                                freq = 0.75)
+#' print(se.probeset.red)
 
 remove_genes <- function(se,
-                         assay,
+                         assay = 1,
                          method,
                          freq = 0.25,
                          verbose = FALSE) {

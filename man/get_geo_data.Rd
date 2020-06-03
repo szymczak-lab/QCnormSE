@@ -30,3 +30,6 @@ Downloads normalized gene expression data from Gene Expression Omnibus (GEO)
 and stores it as a SummarizedExperiment object. Information about detection
 P values and dates of scanning can also be extracted.
 }
+\examples{
+se = get_geo_data(accession = "GSE6710")
+}

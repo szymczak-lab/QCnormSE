@@ -48,3 +48,15 @@ samples for each pairwise combination of components.
 Plots components estimated with the function \code{\link{calculate_mds_pca}}.
 Color and shape of each sample can be set based on different variables.
 }
+\examples{
+data("se.gene")
+
+## PCA
+res.pca = calculate_mds_pca(se = se.gene,
+                            method = "pca")
+
+## color code by group
+plot_mds_pca(res = res.pca,
+             se = se.gene,
+             var.color = "group")
+}

@@ -36,3 +36,10 @@ data.frame with information about samples with wrong sex or NULL.
 Predicts sex using k nearest neighbour classification based on expression
 of sex specific genes.
 }
+\examples{
+data("se.gene")
+
+check_sex(se = se.gene,
+          symbol.column = "Gene.symbol",
+          sex.column = "Sex")
+}

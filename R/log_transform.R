@@ -15,6 +15,11 @@
 #' object with additional assay called <assay>.log.
 #'
 #' @export
+#'
+#' @examples
+#' data("se.probeset")
+#'
+#' se.probeset = log_transform(se = se.probeset)
 
 log_transform <- function(se,
                           assay = 1,
@@ -22,17 +27,22 @@ log_transform <- function(se,
 
     expr = assays(se)[[assay]]
 
-    if (any(expr < 0)) {
+    if (any(expr < 0, na.rm = TRUE)) {
         expr[expr < 0] = 0
     }
-    if (any(expr == 0)) {
+    if (any(expr == 0, na.rm = TRUE)) {
         expr = expr + pseudocount
     }
-    expr = log2(expr)
-    if (any(is.na(expr) | is.infinite(expr))) {
+    expr.log = log2(expr)
+    if (any(is.infinite(expr.log))) {
+        stop("infinite expression values after log transformation!")
+    }
+    if (any(is.na(expr.log)) && sum(is.na(expr.log)) > sum(is.na(expr))) {
         stop("missing expression values after log transformation!")
     }
-    assays(se)[[paste(assay, "log", sep = ".")]] = expr
+    name = ifelse(is.numeric(assay),
+                  names(assays(se))[assay], assay)
+    assays(se)[[paste(name, "log", sep = ".")]] = expr.log
 
     return(se)
 }

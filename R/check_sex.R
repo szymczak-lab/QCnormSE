@@ -28,6 +28,13 @@
 #' @importFrom S4Vectors unstrsplit
 #' @importFrom stats predict
 #' @export
+#'
+#' @examples
+#' data("se.gene")
+#'
+#' check_sex(se = se.gene,
+#'           symbol.column = "Gene.symbol",
+#'           sex.column = "Sex")
 
 check_sex <- function(se,
                       assay = 1,
@@ -37,7 +44,6 @@ check_sex <- function(se,
                       genes = c("DDX3Y", "EIF1AY", "KDM5D", "NLGN4Y", "RPS4Y1",
                                 "TXLNG2P", "UTY", "XIST"),
                       plot = TRUE) {
-
 
     ## extract sex information
     pheno = colData(se)
@@ -61,7 +67,7 @@ check_sex <- function(se,
     if (!(symbol.column %in% colnames(anno))) {
         stop(paste("column", symbol.column, "not found in rowData!"))
     }
-    anno$symbol.char = unstrsplit(anno[, symbol.column],
+    anno$symbol.char = unstrsplit(as.character(anno[, symbol.column]),
                                   sep = "|")
     genes.use = rownames(anno)[which(anno$symbol.char %in% genes)]
 
@@ -76,7 +82,7 @@ check_sex <- function(se,
                                     dist = "euclidean")
         g = plot_mds_pca_2d(res = res.mds,
                             se = se,
-                            dim = 1:2,
+                            dim = c(1, 2),
                             var.color = "sex",
                             title = "MDS (sex specific genes)",
                             palette = col)

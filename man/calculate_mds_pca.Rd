@@ -33,3 +33,14 @@ PCA).
 Performs dimensionality reduction using multi-dimensional scaling (MDS) or
 principal component analysis (PCA) on the sample level.
 }
+\examples{
+data("se.gene")
+
+## PCA
+res.pca = calculate_mds_pca(se = se.gene,
+                            method = "pca")
+
+## MDS
+res.mds = calculate_mds_pca(se = se.gene,
+                            method = "mds")
+}

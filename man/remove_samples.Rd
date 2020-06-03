@@ -4,7 +4,7 @@
 \alias{remove_samples}
 \title{Remove samples based on different criteria}
 \usage{
-remove_samples(se, assay, method, freq = 0.5, verbose = FALSE)
+remove_samples(se, assay = 1, method, freq = 0.5, verbose = FALSE)
 }
 \arguments{
 \item{se}{\code{\link[SummarizedExperiment]{RangedSummarizedExperiment-class}}

@@ -11,6 +11,14 @@ Description: Implementation of several quality control procedures and processing
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
+biocViews:
+    BatchEffect,
+    GeneExpression,
+    Microarray,
+    QualityControl,
+    RNASeq,
+    Transcription,
+    Transcriptomics
 Imports: 
     affyio,
     aplpack,
@@ -26,9 +34,12 @@ Imports:
     Hmisc,
     illuminaio,
     methods,
-    rlang,
     S4Vectors,
     SummarizedExperiment,
     stats,    
     tidyr
+Suggests:
+    curatedBladderData
 RoxygenNote: 6.1.1
+Depends: 
+    R (>= 3.5)

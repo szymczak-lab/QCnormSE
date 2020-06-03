@@ -24,3 +24,6 @@ colData(). Numeric variables are converted from character
 to numeric and syntactically valid variable names are used for the new
 columns.
 }
+\examples{
+se = get_geo_data(accession = "GSE31684")
+}

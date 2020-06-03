@@ -25,3 +25,8 @@ object with batch information in additional column in colData()
 Groups samples into batches based on scan date. Samples run within a short
 time interval can be defined to belong to the same batch.
 }
+\examples{
+data("se.gene")
+se.gene = define_batches(se = se.gene,
+                         col.scan.date = "scan.date")
+}

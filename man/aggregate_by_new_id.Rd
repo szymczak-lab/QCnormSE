@@ -35,3 +35,21 @@ expression values of original idenfiers that map to the same new gene
 identifier by e.g. selecting the one with the largest average expression
 across all samples.
 }
+\examples{
+library(SummarizedExperiment)
+data("se.probeset")
+
+## restrict to subset of probesets (for illustration only)
+genes = c("DDX3Y", "EIF1AY", "KDM5D", "NLGN4Y",
+          "RPS4Y1", "TXLNG2P", "UTY", "XIST")
+ind = unlist(sapply(genes, function(g) {
+    grep(g, rowData(se.probeset)$Gene.symbol)}))
+se.probeset = se.probeset[ind, ]
+print(se.probeset)
+
+## aggregate by gene symbol
+se.gene = aggregate_by_new_id(se = se.probeset,
+                              col.new = "Gene.symbol",
+                              sep = "///")
+print(se.gene)
+}

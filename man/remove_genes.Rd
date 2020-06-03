@@ -4,7 +4,7 @@
 \alias{remove_genes}
 \title{Remove genes based on different criteria}
 \usage{
-remove_genes(se, assay, method, freq = 0.25, verbose = FALSE)
+remove_genes(se, assay = 1, method, freq = 0.25, verbose = FALSE)
 }
 \arguments{
 \item{se}{\code{\link[SummarizedExperiment]{RangedSummarizedExperiment-class}}
@@ -29,4 +29,22 @@ object with genes removed
 Remove genes with no variability (method = "constant"), missing values
 (method = "missing") or low expression (method = "detection.pvalue" or
 method = "zero").
+}
+\examples{
+data("se.probeset")
+print(se.probeset)
+
+## remove probesets with missing values
+se.probeset.red = remove_genes(se = se.probeset,
+                               assay = "exprs.log",
+                               method = "missing",
+                               freq = 0)
+print(se.probeset.red)
+
+## remove probesets with low expression
+se.probeset.red = remove_genes(se = se.probeset,
+                               assay = "detection.pvalue",
+                               method = "detection.pvalue",
+                               freq = 0.75)
+print(se.probeset.red)
 }

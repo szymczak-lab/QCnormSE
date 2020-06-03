@@ -17,6 +17,9 @@
 #'
 #' @importFrom methods is
 #' @export
+#'
+#' @examples
+#' se = get_geo_data(accession = "GSE31684")
 
 extract_geo_characteristics <- function(se, cols = NULL) {
 
@@ -51,11 +54,11 @@ extract_geo_characteristics <- function(se, cols = NULL) {
 }
 
 
-#' internal function used by extract_geo_characteristics
-#'
-#' extracts name and information from single column
-#' converts to numeric if possible
-#'
+# internal function used by extract_geo_characteristics
+#
+# extracts name and information from single column
+# converts to numeric if possible
+#
 #' @importFrom Hmisc all.is.numeric
 #' @keywords internal
 

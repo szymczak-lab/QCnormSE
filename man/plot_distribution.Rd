@@ -33,3 +33,18 @@ Use boxplots, violin plots or quantile plots (in form of parallel coordinate
 plots of the quantiles) to compare the distribution of expression values for
 each sample.
 }
+\examples{
+data("se.gene")
+
+## quantile plot
+plot_distribution(se = se.gene,
+                  method = "quantileplot")
+
+## boxplot
+plot_distribution(se = se.gene,
+                  method = "boxplot")
+
+## violinplot
+plot_distribution(se = se.gene,
+                  method = "violinplot")
+}

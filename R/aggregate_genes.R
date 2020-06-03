@@ -25,6 +25,24 @@
 #' @import SummarizedExperiment
 #' @importFrom stats IQR median quantile
 #' @export
+#'
+#' @examples
+#' library(SummarizedExperiment)
+#' data("se.probeset")
+#'
+#' ## restrict to subset of probesets (for illustration only)
+#' genes = c("DDX3Y", "EIF1AY", "KDM5D", "NLGN4Y",
+#'           "RPS4Y1", "TXLNG2P", "UTY", "XIST")
+#' ind = unlist(sapply(genes, function(g) {
+#'     grep(g, rowData(se.probeset)$Gene.symbol)}))
+#' se.probeset = se.probeset[ind, ]
+#' print(se.probeset)
+#'
+#' ## aggregate by gene symbol
+#' se.gene = aggregate_by_new_id(se = se.probeset,
+#'                               col.new = "Gene.symbol",
+#'                               sep = "///")
+#' print(se.gene)
 
 # @seealso \code{\link{get_annotation}}
 
@@ -74,9 +92,9 @@ aggregate_by_new_id <- function(se,
 
         if (grepl("max", method)) {
             if (method == "max_median") {
-                avg = apply(expr.temp, 1, median)
+                avg = apply(expr.temp, 1, median, na.rm = TRUE)
             } else if (method == "max_mean") {
-                avg = apply(expr.temp, 1, mean)
+                avg = apply(expr.temp, 1, mean, na.rm = TRUE)
             } else {
                 stop(paste("method", method, "not defined!"))
             }
@@ -100,7 +118,9 @@ aggregate_by_new_id <- function(se,
                               colnames(expr))
 
     assays.list = list(expr.new)
-    names(assays.list) = assay
+    name = ifelse(is.numeric(assay),
+                  names(assays(se))[assay], assay)
+    names(assays.list) = name
     se.new = SummarizedExperiment(assays = assays.list,
                                   colData = colData(se),
                                   rowData =

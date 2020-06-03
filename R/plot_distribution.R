@@ -21,6 +21,21 @@
 #' @import ggplot2 ggpubr tidyr
 #' @importFrom GGally ggparcoord
 #' @export
+#'
+#' @examples
+#' data("se.gene")
+#'
+#' ## quantile plot
+#' plot_distribution(se = se.gene,
+#'                   method = "quantileplot")
+#'
+#' ## boxplot
+#' plot_distribution(se = se.gene,
+#'                   method = "boxplot")
+#'
+#' ## violinplot
+#' plot_distribution(se = se.gene,
+#'                   method = "violinplot")
 
 plot_distribution <- function(se,
                               assay = 1,
@@ -129,16 +144,3 @@ plot_distribution <- function(se,
     if (return.outliers) return(info.out)
 }
 
-#' internal function used by plot_distribution
-#'
-#' determines indices of outliers in values
-#'
-#' @keywords internal
-
-get_outliers <- function(values, coef = 5) {
-    med = median(values, na.rm = TRUE)
-    iqr = IQR(values, na.rm = TRUE)
-
-    return(which(values < med - coef * iqr |
-                     values > med + coef * iqr))
-}

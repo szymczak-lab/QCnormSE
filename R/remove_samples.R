@@ -21,7 +21,7 @@
 #' @export
 
 remove_samples <- function(se,
-                           assay,
+                           assay = 1,
                            method,
                            freq = 0.5,
                            verbose = FALSE) {
@@ -36,15 +36,18 @@ remove_samples <- function(se,
     expr = assays(se)[[assay]]
 
     if (method == "missing") {
-        crit = apply(expr, 2, function(x) {sum(is.na(x))}) / nrow(expr)
+        crit = apply(expr, 2, function(x) {
+            sum(is.na(x))}) / nrow(expr)
     } else if (method == "zero") {
-        crit = apply(expr, 2, function(x) {sum(x == 0)}) / nrow(expr)
+        crit = apply(expr, 2, function(x) {
+            sum(x == 0, na.rm = TRUE)}) / nrow(expr)
     } else if (method == "detection.pvalue") {
         range = range(as.numeric(expr), na.rm = TRUE)
         if (min(range) < 0 | max(range) > 1) {
             stop(paste("assay", assay, "does not contain P values!"))
         }
-        crit = apply(expr, 2, function(x) {sum(x >= 0.05)}) / nrow(expr)
+        crit = apply(expr, 2, function(x) {
+            sum(x >= 0.05, na.rm = TRUE)}) / nrow(expr)
     } else {
         stop(paste("method", method, "not known!"))
     }

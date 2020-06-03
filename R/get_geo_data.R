@@ -21,6 +21,9 @@
 #' @importFrom stats IQR
 #' @importFrom BiocGenerics annotation
 #' @export
+#'
+#' @examples
+#' se = get_geo_data(accession = "GSE6710")
 
 get_geo_data <- function(accession,
                          temp.dir = tempdir(),
@@ -33,7 +36,7 @@ get_geo_data <- function(accession,
 
     ## check that accession is a Series record
     if (!grepl("^GSE", accession)) {
-        stop("acsession needs to be a Series record (GSExxx)!")
+        stop("accession needs to be a Series record (GSExxx)!")
     }
 
   ## download from GEO
@@ -49,7 +52,9 @@ get_geo_data <- function(accession,
             stop(paste("more than one ExpressionSet returned for accession",
                        accession, "and no platform specified!"))
         } else {
-            info.platform = sapply(temp.l, annotation)
+            info.platform = vapply(X = temp.l,
+                                   FUN = annotation,
+                                   FUN.VALUE = character(1))
             ind = which(info.platform == platform)
             if (length(ind) == 0) {
                 stop(paste("platform", platform, "does not match information",
@@ -72,7 +77,8 @@ get_geo_data <- function(accession,
 
   ## perform log transformation if not already performed
   expr = assays(se)[[1]]
-  iqr = IQR(as.numeric(expr))
+  iqr = IQR(as.numeric(expr),
+            na.rm = TRUE)
   if (iqr > 100) {
       print("performing log transformation ...")
       se = log_transform(se = se,
@@ -122,6 +128,11 @@ get_geo_data <- function(accession,
 #' @importFrom illuminaio readIDAT
 #'
 #' @export
+#'
+#' @examples
+#' data("se.probeset")
+#'
+#' se.probeset = extract_scan_date(se = se.probeset)
 
 extract_scan_date <- function(se,
                               temp.dir = tempdir(),
@@ -148,7 +159,7 @@ extract_scan_date <- function(se,
     } else {
 
         scan.date.all = NULL
-        for (i in 1:length(accession.samples)) {
+        for (i in seq_len(accession.samples)) {
 
             array.file = dir(temp.dir,
                              pattern = accession.samples[i],
@@ -231,12 +242,20 @@ extract_scan_date <- function(se,
 #' object with detection P value added as assay with the name detection.pvalue.
 #'
 #' @export
+#'
+#' @examples
+#' data("se.probeset")
+#'
+#' se.probeset = extract_detection_pvalue(se = se.probeset,
+#'                                        accession = "GSE6710")
 
 extract_detection_pvalue <- function(accession, se) {
 
     gse = getGEO(GEO = accession,
-                 GSEMatrix = FALSE)
-    gsmlist = GSMList(gse)
+                 GSEMatrix = FALSE,
+                 getGPL = FALSE,
+                 parseCharacteristics = FALSE)
+    gsmlist = GSMList(gse)[se$geo_accession]
     info.col = Columns(gsmlist[[1]])
 
     ## identify column with detection P value
@@ -257,10 +276,14 @@ extract_detection_pvalue <- function(accession, se) {
             pval = do.call("cbind", lapply(gsmlist, function(x) {
                 tab = Table(x)
                 rownames(tab) = tab$ID_REF
-                if (!all(rownames(se) %in% rownames(tab))) {
-                    stop("Some probes not found in detection P value information!")
+                probes.both = intersect(rownames(se), rownames(tab))
+                temp = tab[probes.both, ind.det.pval]
+                probes.miss = setdiff(rownames(se), rownames(tab))
+                if (length(probes.miss) > 0) {
+                    temp = c(temp, rep(NA, length(probes.miss)))
                 }
-                return(tab[rownames(se), ind.det.pval])
+                names(temp) = c(probes.both, probes.miss)
+                return(temp[rownames(se)])
             }))
             rownames(pval) = rownames(se)
 
