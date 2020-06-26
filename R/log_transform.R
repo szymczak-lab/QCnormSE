@@ -2,7 +2,8 @@
 #' Log transformation
 #'
 #' Performs log transformation of expression values (log2). Values below zero
-#' will be set to zero and if zero values are available
+#' will be set to zero and if zero values are available a pseudocount will be
+#' added.
 #'
 #' @param se \code{\link[SummarizedExperiment]{RangedSummarizedExperiment-class}}
 #' object
@@ -12,7 +13,8 @@
 #' transformation (relevant for count data containing zero values).
 #'
 #' @return \code{\link[SummarizedExperiment]{RangedSummarizedExperiment-class}}
-#' object with additional assay called <assay>.log.
+#' object with normalized log transformed expression values in additional assay
+#' called <assay>.log.
 #'
 #' @export
 #'
@@ -40,9 +42,16 @@ log_transform <- function(se,
     if (any(is.na(expr.log)) && sum(is.na(expr.log)) > sum(is.na(expr))) {
         stop("missing expression values after log transformation!")
     }
-    name = ifelse(is.numeric(assay),
-                  names(assays(se))[assay], assay)
-    assays(se)[[paste(name, "log", sep = ".")]] = expr.log
+
+    name.new = paste(ifelse(is.numeric(assay),
+                            names(assays(se))[assay],
+                            assay),
+                     "log", sep = ".")
+    if (name.new %in% names(assays(se))) {
+        warning(paste("assay", name.new, "already existed!"))
+    }
+
+    assays(se)[[name.new]] = expr.log
 
     return(se)
 }

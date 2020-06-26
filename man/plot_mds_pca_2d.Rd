@@ -4,12 +4,13 @@
 \alias{plot_mds_pca_2d}
 \title{MDS or PCA plot (2D)}
 \usage{
-plot_mds_pca_2d(res, dim, se, var.color = NULL, palette = NULL,
-  var.shape = NULL, shape.values = NULL, title = NULL,
-  ellipse = FALSE, ellipse.type = "convex")
+plot_mds_pca_2d(res, dim = c(1, 2), se, var.color = NULL,
+  palette = NULL, var.shape = NULL, shape.values = NULL,
+  title = NULL, factor = 5, ellipse = FALSE,
+  ellipse.type = "convex")
 }
 \arguments{
-\item{res}{data.frame. Output of \code{\link{calculate_mds_pca}}.
+\item{res}{List. Output of \code{\link{calculate_mds_pca}}.
 \code{\link{calculate_mds_pca}}.}
 
 \item{dim}{Numeric vector (2). Numbers of components to be plotted.}
@@ -31,6 +32,9 @@ unique value of var.shape.}
 
 \item{title}{Character. Main title of plot.}
 
+\item{factor}{Numeric. Parameter of the function
+\code{\link[aplpack]{compute.bagplot}}. (default: 5)}
+
 \item{ellipse}{Logical. Should ellipses around points be drawn? (default:
 FALSE).}
 
@@ -38,7 +42,11 @@ FALSE).}
 \code{\link[ggpubr]{ggscatter}} (default: "convex").}
 }
 \value{
-\code{\link[ggplot2]{ggplot}} object
+List with the following components:
+\itemize{
+\item info: data.frame with information about outlier samples or NULL
+\item plot: Scatterplot as returned by \code{\link[ggpubr]{ggscatter}}
+}
 }
 \description{
 Plots two sepcified components estimated with the function
@@ -54,7 +62,7 @@ res.pca = calculate_mds_pca(se = se.gene,
 
 ## color code by group
 plot_mds_pca_2d(res = res.pca,
-                dim = 1:2,
+                dim = c(1, 2),
                 se = se.gene,
                 var.color = "group")
 }

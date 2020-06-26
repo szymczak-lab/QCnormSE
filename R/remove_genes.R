@@ -1,27 +1,25 @@
 
-## todo:
-## add wrapper to more sophistcated filter functions for RNA-seq data available
-## in DESeq2/edgeR/limma (not sure which package)
-
 #' Remove genes based on different criteria
 #'
 #' Remove genes with no variability (method = "constant"), missing values
-#' (method = "missing") or low expression (method = "detection.pvalue" or
-#' method = "zero").
+#' (method = "missing") or low expression (method = "detection.pvalue",
+#' method = "zero" or method = "edgeR").
 #'
 #' @param se \code{\link[SummarizedExperiment]{RangedSummarizedExperiment-class}}
 #' object
 #' @param assay Character or integer. Name or number of assay to be used for
 #' filtering.
 #' @param method Method to determine genes to be removed: "constant", "missing",
-#' "detection.pvalue", "zero".
-#' @param freq Numeric. If more than freq*100 % of the samples fulfill criterion
-#' the gene is removed (not used if method = "constant").
+#' "detection.pvalue", "zero", "edgeR" (using
+#' \code{\link[edgeR]{filterByExpr}}).
+#' @param freq Numeric. If more than freq*100 \% of the samples fulfill
+#' criterion, the gene is removed (not used if method = "constant").
 #' @param verbose Logical. Should number of removed genes be reported?
 #'
 #' @return \code{\link[SummarizedExperiment]{RangedSummarizedExperiment-class}}
 #' object with genes removed
 #'
+#' @importFrom edgeR filterByExpr
 #' @export
 #'
 #' @examples
@@ -60,6 +58,14 @@ remove_genes <- function(se,
     if (method == "constant") {
         sd = apply(expr, 1, sd)
         ind.rm = which(sd == 0)
+    } else if (method == "edgeR") {
+        n = floor(ncol(se) * freq)
+        group = c(rep(1, n), rep(2, ncol(se) - n))
+        info.keep = filterByExpr(y = expr,
+                                 group = group,
+                                 min.count = 10,
+                                 min.total.count = 15)
+        ind.rm = which(!info.keep)
     } else {
         if (method == "missing") {
             crit = apply(expr, 1, function(x) {sum(is.na(x))}) / ncol(expr)

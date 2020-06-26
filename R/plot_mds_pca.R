@@ -99,7 +99,7 @@ calculate_mds_pca <- function(se,
 #' Plots components estimated with the function \code{\link{calculate_mds_pca}}.
 #' Color and shape of each sample can be set based on different variables.
 #'
-#' @param res data.frame. Output of \code{\link{calculate_mds_pca}}.
+#' @param res List. Output of \code{\link{calculate_mds_pca}}.
 #' @param se \code{\link[SummarizedExperiment]{RangedSummarizedExperiment-class}}
 #' object
 #' @param var.color Character or integer vector. Variable used to determine
@@ -112,15 +112,19 @@ calculate_mds_pca <- function(se,
 #' unique value of var.shape.
 #' @param title Character. Title of the plot. If NULL title will be set based on
 #' method.
-#' @param return.outliers Logical. Return info about outlier samples.
 #' @param factor Numeric. Parameter of the function
 #' \code{\link[aplpack]{compute.bagplot}}. (default: 5)
 #' @param ellipse Logical. Should ellipses around points be drawn? (default:
 #' FALSE).
 #' @param ellipse.type Character. Type of ellipse as given in
 #'
-#' @return If return.outliers = TRUE, data.frame with identifiers of outlier
-#' samples for each pairwise combination of components.
+#' @return List with the following components:
+#' \itemize{
+#' \item info: data.frame with information about outlier samples for each
+#' pairwise combination of component sor NULL
+#' \item plot: Plot with three scatterplot as returned by
+#' \code{\link[ggpubr]{ggarrange}}
+#' }
 #'
 #' @import ggpubr ggplot2
 #' @importFrom aplpack compute.bagplot
@@ -145,7 +149,6 @@ plot_mds_pca <- function(res,
                          var.shape = NULL,
                          shape.values = NULL,
                          title = NULL,
-                         return.outliers = TRUE,
                          factor = 5,
                          ellipse = FALSE,
                          ellipse.type = "convex") {
@@ -155,37 +158,25 @@ plot_mds_pca <- function(res,
     method = ifelse(!is.null(res$var.explained), "PCA", "MDS")
     if (is.null(title)) title = method
 
+    ## 2 dimensional results
+    dims = list(c(1, 2), c(1, 3), c(2, 3))
+    res = lapply(dims,
+                 FUN = plot_mds_pca_2d,
+                 res = res,
+                 se = se,
+                 var.color = var.color,
+                 palette = palette,
+                 var.shape = var.shape,
+                 shape.values = shape.values,
+                 title = "",
+                 ellipse = ellipse,
+                 ellipse.type = ellipse.type)
+
     ## plots
-    plots.l = list(plot_mds_pca_2d(res = res,
-                                   se = se,
-                                   dim = c(1, 2),
-                                   var.color = var.color,
-                                   palette = palette,
-                                   var.shape = var.shape,
-                                   shape.values = shape.values,
-                                   title = "",
-                                   ellipse = ellipse,
-                                   ellipse.type = ellipse.type),
-                   plot_mds_pca_2d(res = res,
-                                   se = se,
-                                   dim = c(1, 3),
-                                   var.color = var.color,
-                                   palette = palette,
-                                   var.shape = var.shape,
-                                   shape.values = shape.values,
-                                   title = "",
-                                   ellipse = ellipse,
-                                   ellipse.type = ellipse.type),
-                   plot_mds_pca_2d(res = res,
-                                   se = se,
-                                   dim = 2:3,
-                                   var.color = var.color,
-                                   palette = palette,
-                                   var.shape = var.shape,
-                                   shape.values = shape.values,
-                                   title = "",
-                                   ellipse = ellipse,
-                                   ellipse.type = ellipse.type))
+    plots.l = lapply(res,
+                     FUN = function(x) {
+                         return(x$plot)
+                     })
 
     legend = ifelse(is.null(var.color) & is.null(var.shape),
                     "none", "bottom")
@@ -199,21 +190,16 @@ plot_mds_pca <- function(res,
                         top = text_grob(title,
                                         face = "bold",
                                         size = 14))
-    print(g)
+#    print(g)
 
+    info.out = do.call(rbind,
+                       lapply(res,
+                              FUN = function(x) {
+                                  return(x$info)
+                              }))
 
-    if (return.outliers) {
-        info.out = rbind(get_outliers_mds_pca_2d(scores = res$scores,
-                                                 dim = c(1, 2),
-                                                 factor = factor),
-                         get_outliers_mds_pca_2d(scores = res$scores,
-                                                 dim = c(1, 3),
-                                                 factor = factor),
-                         get_outliers_mds_pca_2d(scores = res$scores,
-                                                 dim = c(2, 3),
-                                                 factor = factor))
-        return(info.out)
-    }
+    return(list(info = info.out,
+                plot = g))
 
 }
 
@@ -223,7 +209,7 @@ plot_mds_pca <- function(res,
 #' \code{\link{calculate_mds_pca}}. Color and shape of each sample can be set
 #' based on different variables.
 #'
-#' @param res data.frame. Output of \code{\link{calculate_mds_pca}}.
+#' @param res List. Output of \code{\link{calculate_mds_pca}}.
 #' \code{\link{calculate_mds_pca}}.
 #' @param dim Numeric vector (2). Numbers of components to be plotted.
 #' @param se \code{\link[SummarizedExperiment]{RangedSummarizedExperiment-class}}
@@ -237,6 +223,8 @@ plot_mds_pca <- function(res,
 #' @param shape.values Vector with symbols. Needs to provide a symbol for each
 #' unique value of var.shape.
 #' @param title Character. Main title of plot.
+#' @param factor Numeric. Parameter of the function
+#' \code{\link[aplpack]{compute.bagplot}}. (default: 5)
 #' @param ellipse Logical. Should ellipses around points be drawn? (default:
 #' FALSE).
 #' @param ellipse.type Character. Type of ellipse as given in
@@ -245,7 +233,11 @@ plot_mds_pca <- function(res,
 #' @import ggpubr ggplot2
 #' @export
 #'
-#' @return \code{\link[ggplot2]{ggplot}} object
+#' @return List with the following components:
+#' \itemize{
+#' \item info: data.frame with information about outlier samples or NULL
+#' \item plot: Scatterplot as returned by \code{\link[ggpubr]{ggscatter}}
+#' }
 #'
 #' @examples
 #' data("se.gene")
@@ -261,13 +253,14 @@ plot_mds_pca <- function(res,
 #'                 var.color = "group")
 
 plot_mds_pca_2d <- function(res,
-                            dim,
+                            dim = c(1, 2),
                             se,
                             var.color = NULL,
                             palette = NULL,
                             var.shape = NULL,
                             shape.values = NULL,
                             title = NULL,
+                            factor = 5,
                             ellipse = FALSE,
                             ellipse.type = "convex") {
     scores = res$scores
@@ -332,7 +325,12 @@ plot_mds_pca_2d <- function(res,
         }
     }
 
-    return(g)
+    ## identify outliers
+    info.out = get_outliers_mds_pca_2d(scores = res$scores,
+                                       dim = dim,
+                                       factor = factor)
+    return(list(info = info.out,
+                plot = g))
 
 }
 
@@ -373,7 +371,7 @@ prepare_var_for_plot <- function(se,
 #' @keywords internal
 
 get_outliers_mds_pca_2d <- function(scores,
-                                    dim,
+                                    dim = c(1, 2),
                                     factor = 5) {
 
     method = ifelse(grepl("^PC", colnames(scores)[1]),
@@ -381,8 +379,8 @@ get_outliers_mds_pca_2d <- function(scores,
     criterion = paste(method, "dim", paste(dim, collapse = "."), sep = ".")
 
     info.bagplot = compute.bagplot(x = scores[, dim[1]],
-                                            y = scores[, dim[2]],
-                                            factor = factor)
+                                   y = scores[, dim[2]],
+                                   factor = factor)
     out = info.bagplot$pxy.outlier
     if (!is.null(out)) {
 

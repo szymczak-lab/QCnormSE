@@ -20,9 +20,16 @@
 #' (default: red and blue).
 #' @param genes Character vector. Symbols of sex specific genes to be used in
 #' classification (default: genes collected from the literature, see details).
-#' @param plot Logical. Should MDS plot be generated (default: TRUE).
+#' @param title Character. Title of the plot. If NULL title will be set to
+#' "MDS (sex specific genes)".
+#' @param verbose Logical. Should information about the genes be printed
+#' (default: FALSE).
 #'
-#' @return data.frame with information about samples with wrong sex or NULL.
+#' @return List with the following components:
+#' \itemize{
+#' \item info: data.frame with information about samples with wrong sex or NULL
+#' \item plot: MDS plot as returned by \code{plot_mds_pca_2d}
+#' }
 #'
 #' @importFrom caret knn3
 #' @importFrom S4Vectors unstrsplit
@@ -43,7 +50,8 @@ check_sex <- function(se,
                       col = c("red", "blue"),
                       genes = c("DDX3Y", "EIF1AY", "KDM5D", "NLGN4Y", "RPS4Y1",
                                 "TXLNG2P", "UTY", "XIST"),
-                      plot = TRUE) {
+                      title = NULL,
+                      verbose = FALSE) {
 
     ## extract sex information
     pheno = colData(se)
@@ -67,7 +75,8 @@ check_sex <- function(se,
     if (!(symbol.column %in% colnames(anno))) {
         stop(paste("column", symbol.column, "not found in rowData!"))
     }
-    anno$symbol.char = unstrsplit(as.character(anno[, symbol.column]),
+    anno$symbol.char = unstrsplit(#as.character(anno[, symbol.column]), # does not work with SimpleCharacterList (e.g. used in ERP009768)
+                                  anno[, symbol.column],
                                   sep = "|")
     genes.use = rownames(anno)[which(anno$symbol.char %in% genes)]
 
@@ -75,19 +84,26 @@ check_sex <- function(se,
         stop("at least 2 genes are needed to predict sex!")
     }
 
-    if (plot) {
-        res.mds = calculate_mds_pca(se = se[genes.use, ],
-                                    assay = assay,
-                                    method = "mds",
-                                    dist = "euclidean")
-        g = plot_mds_pca_2d(res = res.mds,
-                            se = se,
-                            dim = c(1, 2),
-                            var.color = "sex",
-                            title = "MDS (sex specific genes)",
-                            palette = col)
-        print(g)
+    if (verbose) {
+        print(paste("using the following", length(genes.use), "genes:"))
+        symbols.use = sort(unique(anno[genes.use, "symbol.char"]))
+        print(paste(symbols.use, collapse = ","))
     }
+
+    res.mds = calculate_mds_pca(se = se[genes.use, ],
+                                assay = assay,
+                                method = "mds",
+                                dist = "euclidean")
+    if (is.null(title)) {
+        title = "MDS (sex specific genes)"
+    }
+    g = plot_mds_pca_2d(res = res.mds,
+                        se = se,
+                        dim = c(1, 2),
+                        var.color = "sex",
+                        title = title,
+                        palette = col)$plot
+    #        print(g)
 
     ## classification using knn
     if (is.character(assay) && !(assay %in% names(assays(se)))) {
@@ -111,6 +127,7 @@ check_sex <- function(se,
     } else {
         info.wrong = NULL
     }
-    return(info.wrong)
+    return(list(info = info.wrong,
+                plot = g))
 
 }

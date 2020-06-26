@@ -7,7 +7,7 @@
 check_sex(se, assay = 1, symbol.column = "symbol",
   sex.column = "sex", col = c("red", "blue"), genes = c("DDX3Y",
   "EIF1AY", "KDM5D", "NLGN4Y", "RPS4Y1", "TXLNG2P", "UTY", "XIST"),
-  plot = TRUE)
+  title = NULL, verbose = FALSE)
 }
 \arguments{
 \item{se}{\code{\link[SummarizedExperiment]{RangedSummarizedExperiment-class}}
@@ -27,10 +27,18 @@ expression data to be used for sex check.}
 \item{genes}{Character vector. Symbols of sex specific genes to be used in
 classification (default: genes collected from the literature, see details).}
 
-\item{plot}{Logical. Should MDS plot be generated (default: TRUE).}
+\item{title}{Character. Title of the plot. If NULL title will be set to
+"MDS (sex specific genes)".}
+
+\item{verbose}{Logical. Should information about the genes be printed
+(default: FALSE).}
 }
 \value{
-data.frame with information about samples with wrong sex or NULL.
+List with the following components:
+\itemize{
+\item info: data.frame with information about samples with wrong sex or NULL
+\item plot: MDS plot as returned by \code{plot_mds_pca_2d}
+}
 }
 \description{
 Predicts sex using k nearest neighbour classification based on expression

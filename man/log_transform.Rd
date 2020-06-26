@@ -18,11 +18,13 @@ transformation (relevant for count data containing zero values).}
 }
 \value{
 \code{\link[SummarizedExperiment]{RangedSummarizedExperiment-class}}
-object with additional assay called <assay>.log.
+object with normalized log transformed expression values in additional assay
+called <assay>.log.
 }
 \description{
 Performs log transformation of expression values (log2). Values below zero
-will be set to zero and if zero values are available
+will be set to zero and if zero values are available a pseudocount will be
+added.
 }
 \examples{
 data("se.probeset")

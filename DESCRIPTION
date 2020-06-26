@@ -24,20 +24,24 @@ Imports:
     aplpack,
     BiocGenerics,
     caret,
+    ComplexHeatmap,
     DESeq2,
+    edgeR,
     doppelgangR,
     GEOquery,
     GGally,
     ggplot2,
     ggpubr,
     gPCA,
+    grid,
     Hmisc,
     illuminaio,
     methods,
     S4Vectors,
     SummarizedExperiment,
     stats,    
-    tidyr
+    tidyr,
+    viridis
 Suggests:
     curatedBladderData
 RoxygenNote: 6.1.1

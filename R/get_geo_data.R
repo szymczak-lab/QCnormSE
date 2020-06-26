@@ -159,7 +159,7 @@ extract_scan_date <- function(se,
     } else {
 
         scan.date.all = NULL
-        for (i in seq_len(accession.samples)) {
+        for (i in seq_len(length(accession.samples))) {
 
             array.file = dir(temp.dir,
                              pattern = accession.samples[i],

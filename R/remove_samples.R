@@ -11,7 +11,7 @@
 #' filtering.
 #' @param method Method to determine samples to be removed: "missing",
 #' "detection.pvalue", "zero".
-#' @param freq Numeric. If more than freq*100 % of the genes fulfill criterion
+#' @param freq Numeric. If more than freq*100 \% of the genes fulfill criterion,
 #' the sample is removed.
 #' @param verbose Logical. Should number of removed samples be reported?
 #'

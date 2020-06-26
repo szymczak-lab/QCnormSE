@@ -4,27 +4,32 @@
 \alias{normalize_counts}
 \title{Normalize raw read counts of RNA-seq experiments}
 \usage{
-normalize_counts(se, assay.raw = 1, assay.norm = "counts.norm",
-  method = "vst")
+normalize_counts(se, assay = 1, method = "tmm",
+  col.gene.length = "bp_length", log = TRUE, prior.count = 2)
 }
 \arguments{
 \item{se}{\code{\link[SummarizedExperiment]{RangedSummarizedExperiment-class}}
 object}
 
-\item{assay.raw}{Character or integer. Name or number of assay containing raw
+\item{assay}{Character or integer. Name or number of assay containing raw
 read counts.}
 
-\item{assay.norm}{Character. Name of new assay containing normalized
-read counts.}
+\item{method}{Method to use for normalizing: "tmm" (default), "cpm",
+"rpkm".}
 
-\item{method}{Method to use for normalizing: "vst" (default),
-"rlog", "normTransform"}
+\item{col.gene.length}{Character or integer. Name or number of column in
+rowData containing gene length information.}
+
+\item{log}{Logical. Should log2 transformed values be returned?}
+
+\item{prior.count}{Numeric. Average count to be added to each observation
+to avoid taking log of zero.}
 }
 \value{
 \code{\link[SummarizedExperiment]{RangedSummarizedExperiment-class}}
-object with normalized read counts
+object with normalized read counts in additional assay called <assay>.norm.
 }
 \description{
 Generates normalized read counts of RNA-seq data sets using several functions
-provided in the Bioconductor package \pkg{DESeq2}.
+provided in the Bioconductor package \pkg{edgeR}.
 }

@@ -5,12 +5,11 @@
 \title{MDS or PCA plot}
 \usage{
 plot_mds_pca(res, se, var.color = NULL, palette = NULL,
-  var.shape = NULL, shape.values = NULL, title = NULL,
-  return.outliers = TRUE, factor = 5, ellipse = FALSE,
-  ellipse.type = "convex")
+  var.shape = NULL, shape.values = NULL, title = NULL, factor = 5,
+  ellipse = FALSE, ellipse.type = "convex")
 }
 \arguments{
-\item{res}{data.frame. Output of \code{\link{calculate_mds_pca}}.}
+\item{res}{List. Output of \code{\link{calculate_mds_pca}}.}
 
 \item{se}{\code{\link[SummarizedExperiment]{RangedSummarizedExperiment-class}}
 object}
@@ -30,8 +29,6 @@ unique value of var.shape.}
 \item{title}{Character. Title of the plot. If NULL title will be set based on
 method.}
 
-\item{return.outliers}{Logical. Return info about outlier samples.}
-
 \item{factor}{Numeric. Parameter of the function
 \code{\link[aplpack]{compute.bagplot}}. (default: 5)}
 
@@ -41,8 +38,13 @@ FALSE).}
 \item{ellipse.type}{Character. Type of ellipse as given in}
 }
 \value{
-If return.outliers = TRUE, data.frame with identifiers of outlier
-samples for each pairwise combination of components.
+List with the following components:
+\itemize{
+\item info: data.frame with information about outlier samples for each
+pairwise combination of component sor NULL
+\item plot: Plot with three scatterplot as returned by
+\code{\link[ggpubr]{ggarrange}}
+}
 }
 \description{
 Plots components estimated with the function \code{\link{calculate_mds_pca}}.

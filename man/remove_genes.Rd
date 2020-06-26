@@ -14,10 +14,11 @@ object}
 filtering.}
 
 \item{method}{Method to determine genes to be removed: "constant", "missing",
-"detection.pvalue", "zero".}
+"detection.pvalue", "zero", "edgeR" (using
+\code{\link[edgeR]{filterByExpr}}).}
 
-\item{freq}{Numeric. If more than freq*100 % of the samples fulfill criterion
-the gene is removed (not used if method = "constant").}
+\item{freq}{Numeric. If more than freq*100 \% of the samples fulfill
+criterion, the gene is removed (not used if method = "constant").}
 
 \item{verbose}{Logical. Should number of removed genes be reported?}
 }
@@ -27,8 +28,8 @@ object with genes removed
 }
 \description{
 Remove genes with no variability (method = "constant"), missing values
-(method = "missing") or low expression (method = "detection.pvalue" or
-method = "zero").
+(method = "missing") or low expression (method = "detection.pvalue",
+method = "zero" or method = "edgeR").
 }
 \examples{
 data("se.probeset")
