@@ -4,10 +4,8 @@
 \alias{check_sex}
 \title{Sex check}
 \usage{
-check_sex(se, assay = 1, symbol.column = "symbol",
-  sex.column = "sex", col = c("red", "blue"), genes = c("DDX3Y",
-  "EIF1AY", "KDM5D", "NLGN4Y", "RPS4Y1", "TXLNG2P", "UTY", "XIST"),
-  title = NULL, verbose = FALSE)
+check_sex(se, assay = 1, gene.column = "symbol", info.sex.genes,
+  sex.column = "sex", col = c("red", "blue"), title = NULL)
 }
 \arguments{
 \item{se}{\code{\link[SummarizedExperiment]{RangedSummarizedExperiment-class}}
@@ -16,22 +14,22 @@ object}
 \item{assay}{Character or integer. Name or number of assay containing
 expression data to be used for sex check.}
 
-\item{symbol.column}{Character. Column in rowData containing gene symbols
+\item{gene.column}{Character. Column in rowData containing gene symbols
 (default: "symbol").}
+
+\item{info.sex.genes}{data.frame. Information about sex chromosomal genes
+(see \code{info.sex.genes}).}
 
 \item{sex.column}{Character. Column in colData containing sex information.}
 
 \item{col}{Character vector. Colours to be used for coloring sex in MDS plot
 (default: red and blue).}
 
-\item{genes}{Character vector. Symbols of sex specific genes to be used in
-classification (default: genes collected from the literature, see details).}
-
 \item{title}{Character. Title of the plot. If NULL title will be set to
 "MDS (sex specific genes)".}
 
-\item{verbose}{Logical. Should information about the genes be printed
-(default: FALSE).}
+\item{genes}{Character vector. Symbols of sex specific genes to be used in
+classification (default: genes collected from the literature, see details).}
 }
 \value{
 List with the following components:
@@ -46,8 +44,10 @@ of sex specific genes.
 }
 \examples{
 data("se.gene")
+data("info.sex.genes")
 
 check_sex(se = se.gene,
-          symbol.column = "Gene.symbol",
+          info.sex.genes = info.sex.genes,
+          gene.column = "Gene.symbol",
           sex.column = "Sex")
 }

@@ -1,19 +1,17 @@
 
-## todo:
-## y chromosomal genes
-## or analysis based on X and Y chromosomal genes
-## references to selected genes
-
 #' Sex check
 #'
 #' Predicts sex using k nearest neighbour classification based on expression
 #' of sex specific genes.
 #'
-#' @param se \code{\link[SummarizedExperiment]{RangedSummarizedExperiment-class}}
+#' @param se
+#' \code{\link[SummarizedExperiment]{RangedSummarizedExperiment-class}}
 #' object
 #' @param assay Character or integer. Name or number of assay containing
 #' expression data to be used for sex check.
-#' @param symbol.column Character. Column in rowData containing gene symbols
+#' @param info.sex.genes data.frame. Information about sex chromosomal genes
+#' (see \code{info.sex.genes}).
+#' @param gene.column Character. Column in rowData containing gene symbols
 #' (default: "symbol").
 #' @param sex.column Character. Column in colData containing sex information.
 #' @param col Character vector. Colours to be used for coloring sex in MDS plot
@@ -22,8 +20,6 @@
 #' classification (default: genes collected from the literature, see details).
 #' @param title Character. Title of the plot. If NULL title will be set to
 #' "MDS (sex specific genes)".
-#' @param verbose Logical. Should information about the genes be printed
-#' (default: FALSE).
 #'
 #' @return List with the following components:
 #' \itemize{
@@ -38,20 +34,20 @@
 #'
 #' @examples
 #' data("se.gene")
+#' data("info.sex.genes")
 #'
 #' check_sex(se = se.gene,
-#'           symbol.column = "Gene.symbol",
+#'           info.sex.genes = info.sex.genes,
+#'           gene.column = "Gene.symbol",
 #'           sex.column = "Sex")
 
 check_sex <- function(se,
                       assay = 1,
-                      symbol.column = "symbol",
+                      gene.column = "symbol",
+                      info.sex.genes,
                       sex.column = "sex",
                       col = c("red", "blue"),
-                      genes = c("DDX3Y", "EIF1AY", "KDM5D", "NLGN4Y", "RPS4Y1",
-                                "TXLNG2P", "UTY", "XIST"),
-                      title = NULL,
-                      verbose = FALSE) {
+                      title = NULL) {
 
     ## extract sex information
     pheno = colData(se)
@@ -72,25 +68,41 @@ check_sex <- function(se,
 
     ## extract genes
     anno = rowData(se)
-    if (!(symbol.column %in% colnames(anno))) {
-        stop(paste("column", symbol.column, "not found in rowData!"))
+    if (!(gene.column %in% colnames(anno))) {
+        stop(paste("column", gene.column, "not found in rowData!"))
     }
-    anno$symbol.char = unstrsplit(#as.character(anno[, symbol.column]), # does not work with SimpleCharacterList (e.g. used in ERP009768)
-                                  anno[, symbol.column],
-                                  sep = "|")
-    genes.use = rownames(anno)[which(anno$symbol.char %in% genes)]
+    # does not work with SimpleCharacterList (e.g. used in ERP009768)
+    anno$gene.char = unstrsplit(#as.character(anno[, gene.column]),
+        anno[, gene.column],
+        sep = "|")
+
+    ## identify column of info.sex.genes to use
+    ## (maximum number of matches with gene.column)
+    cols = c("ensembl_gene_id",
+             "hgnc_symbol",
+             "entrezgene_id")
+    match.l = apply(info.sex.genes[, cols], 2,
+                      FUN = function(x) {
+                        intersect(anno$gene.char, x)
+                      })
+    no.match = vapply(match.l,
+                      FUN = length,
+                      FUN.VALUE = numeric(1))
+    ind.use = which.max(no.match)
+
+    genes.use = rownames(anno)[which(anno$gene.char %in% match.l[[ind.use]])]
 
     if (length(genes.use) < 2) {
         stop("at least 2 genes are needed to predict sex!")
     }
 
-    if (verbose) {
-        print(paste("using the following", length(genes.use), "genes:"))
-        symbols.use = sort(unique(anno[genes.use, "symbol.char"]))
-        print(paste(symbols.use, collapse = ","))
-    }
+    se.use = se[genes.use, ]
+    se.use = remove_genes(se = se.use,
+                          assay = assay,
+                          method = "missing",
+                          freq = 0)
 
-    res.mds = calculate_mds_pca(se = se[genes.use, ],
+    res.mds = calculate_mds_pca(se = se.use,
                                 assay = assay,
                                 method = "mds",
                                 dist = "euclidean")
@@ -98,7 +110,7 @@ check_sex <- function(se,
         title = "MDS (sex specific genes)"
     }
     g = plot_mds_pca_2d(res = res.mds,
-                        se = se,
+                        se = se.use,
                         dim = c(1, 2),
                         var.color = "sex",
                         title = title,
@@ -106,19 +118,19 @@ check_sex <- function(se,
     #        print(g)
 
     ## classification using knn
-    if (is.character(assay) && !(assay %in% names(assays(se)))) {
+    if (is.character(assay) && !(assay %in% names(assays(se.use)))) {
         stop(paste("assay", assay, "not found!"))
     }
-    expr = assays(se[genes.use, ])[[assay]]
+    expr = assays(se.use)[[assay]]
 
     res.knn = knn3(x = t(expr),
-                   y = factor(se$sex),
+                   y = factor(se.use$sex),
                    k = 5)
     sex.pred = predict(res.knn,
                        t(expr),
                        type = "class")
 
-    ind.wrong = which(sex.pred != se$sex)
+    ind.wrong = which(sex.pred != se.use$sex)
     if (length(ind.wrong) > 0) {
         info.wrong = data.frame(id = colnames(se)[ind.wrong],
                                 sex.pheno = se$sex[ind.wrong],

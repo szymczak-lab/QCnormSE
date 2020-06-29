@@ -5,18 +5,23 @@
 #' plots of the quantiles) to compare the distribution of expression values for
 #' each sample.
 #'
-#' @param se \code{\link[SummarizedExperiment]{RangedSummarizedExperiment-class}}
+#' @param se
+#' \code{\link[SummarizedExperiment]{RangedSummarizedExperiment-class}}
 #' object
 #' @param assay Character or integer. Name or number of assay to be used for
 #' plotting.
 #' @param method Method to use for plotting: "quantileplot" (default),
 #' "boxplot", "violinplot".
-#' @param return.outliers Logical. Return info about outlier samples.
 #' @param coef Numeric. Used in outlier definition (median +/- coef * IQR)
 #' @param title Character. Title of the plot.
 #'
-#' @return If return.outliers = TRUE, data.frame with identifiers of outlier
-#' samples
+#' @return List with the following components:
+#' \itemize{
+#' \item info: data.frame with information about outlier samples or NULL
+#' \item plot: plot as returned by \code{\link[GGally]{ggparcoord}} (quantile
+#' plot), \code{\link[ggplot2]{ggplot}} (boxplot) or
+#' \code{\link[ggpubr]{ggviolin}} (violin plot)
+#' }
 #'
 #' @import ggplot2 ggpubr tidyr
 #' @importFrom GGally ggparcoord
@@ -34,15 +39,16 @@
 #'                   method = "boxplot")
 #'
 #' ## violinplot
+#' library("ggpubr")
 #' plot_distribution(se = se.gene,
 #'                   method = "violinplot")
 
 plot_distribution <- function(se,
                               assay = 1,
                               method = "quantileplot",
-                              return.outliers = TRUE,
                               coef = 5,
-                              title = "Distribution of expression values in each sample") {
+                              title = paste("Distribution of expression",
+                                            "values in each sample")) {
 
     if (is.character(assay) && !(assay %in% names(assays(se)))) {
         stop(paste("assay", assay, "not found!"))
@@ -56,8 +62,9 @@ plot_distribution <- function(se,
         prob = seq(0, 1, 0.1)
         quant.for.plot = data.frame(quantile =
                                         factor(prob,
-                                               levels = sort(prob,
-                                                             decreasing = TRUE)),
+                                               levels =
+                                                   sort(prob,
+                                                        decreasing = TRUE)),
                                     apply(expr, 2, quantile,
                                           probs = prob, na.rm = TRUE))
         showPoints = ifelse(ncol(se) < 50, TRUE, FALSE)
@@ -122,7 +129,7 @@ plot_distribution <- function(se,
         stop(paste("method", method, "not known!"))
     }
 
-    print(g)
+#    print(g)
 
     ## define outliers
     out.med = get_outliers(values = quant[, c("middle")],
@@ -141,6 +148,7 @@ plot_distribution <- function(se,
         info.out = NULL
     }
 
-    if (return.outliers) return(info.out)
+    return(list(info = info.out,
+                plot = g))
 }
 

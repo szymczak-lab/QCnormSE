@@ -61,8 +61,8 @@ detect_duplicated_samples <- function(se,
         info.out = NULL
     }
 
-    ## use tidyr to convert matrix to data.frame with info for each pair
-    #https://stackoverflow.com/questions/45825685/correlations-for-pairs-of-combinations
+## use tidyr to convert matrix to data.frame with info for each pair
+#https://stackoverflow.com/questions/45825685/correlations-for-pairs-of-combinations
     info.cor = data.frame(row = rownames(cor.m)[row(cor.m)[upper.tri(cor.m)]],
                           col = colnames(cor.m)[col(cor.m)[upper.tri(cor.m)]],
                           cor = cor.m[upper.tri(cor.m)],

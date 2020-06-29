@@ -5,7 +5,8 @@
 #' (method = "missing") or low expression (method = "detection.pvalue",
 #' method = "zero" or method = "edgeR").
 #'
-#' @param se \code{\link[SummarizedExperiment]{RangedSummarizedExperiment-class}}
+#' @param se
+#' \code{\link[SummarizedExperiment]{RangedSummarizedExperiment-class}}
 #' object
 #' @param assay Character or integer. Name or number of assay to be used for
 #' filtering.

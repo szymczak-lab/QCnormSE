@@ -4,9 +4,8 @@
 \alias{plot_distribution}
 \title{Plot distribution of expression values for each sample}
 \usage{
-plot_distribution(se, assay = 1, method = "quantileplot",
-  return.outliers = TRUE, coef = 5,
-  title = "Distribution of expression values in each sample")
+plot_distribution(se, assay = 1, method = "quantileplot", coef = 5,
+  title = paste("Distribution of expression", "values in each sample"))
 }
 \arguments{
 \item{se}{\code{\link[SummarizedExperiment]{RangedSummarizedExperiment-class}}
@@ -18,15 +17,18 @@ plotting.}
 \item{method}{Method to use for plotting: "quantileplot" (default),
 "boxplot", "violinplot".}
 
-\item{return.outliers}{Logical. Return info about outlier samples.}
-
 \item{coef}{Numeric. Used in outlier definition (median +/- coef * IQR)}
 
 \item{title}{Character. Title of the plot.}
 }
 \value{
-If return.outliers = TRUE, data.frame with identifiers of outlier
-samples
+List with the following components:
+\itemize{
+\item info: data.frame with information about outlier samples or NULL
+\item plot: plot as returned by \code{\link[GGally]{ggparcoord}} (quantile
+plot), \code{\link[ggplot2]{ggplot}} (boxplot) or
+\code{\link[ggpubr]{ggviolin}} (violin plot)
+}
 }
 \description{
 Use boxplots, violin plots or quantile plots (in form of parallel coordinate
@@ -45,6 +47,7 @@ plot_distribution(se = se.gene,
                   method = "boxplot")
 
 ## violinplot
+library("ggpubr")
 plot_distribution(se = se.gene,
                   method = "violinplot")
 }

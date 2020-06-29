@@ -26,8 +26,8 @@ shape. If NULL filled circles will be used for all samples.}
 \item{shape.values}{Vector with symbols. Needs to provide a symbol for each
 unique value of var.shape.}
 
-\item{title}{Character. Title of the plot. If NULL title will be set based on
-method.}
+\item{title}{Character. Title of the plot. If NULL title will be set based
+on method.}
 
 \item{factor}{Numeric. Parameter of the function
 \code{\link[aplpack]{compute.bagplot}}. (default: 5)}

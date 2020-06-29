@@ -1,10 +1,11 @@
 
 #' Normalize raw read counts of RNA-seq experiments
 #'
-#' Generates normalized read counts of RNA-seq data sets using several functions
-#' provided in the Bioconductor package \pkg{edgeR}.
+#' Generates normalized read counts of RNA-seq data sets using several
+#' functions provided in the Bioconductor package \pkg{edgeR}.
 #'
-#' @param se \code{\link[SummarizedExperiment]{RangedSummarizedExperiment-class}}
+#' @param se
+#' \code{\link[SummarizedExperiment]{RangedSummarizedExperiment-class}}
 #' object
 #' @param assay Character or integer. Name or number of assay containing raw
 #' read counts.
@@ -21,6 +22,13 @@
 #'
 #' @importFrom edgeR cpm rpkm calcNormFactors
 #' @export
+#'
+#' @examples
+#' library(recount)
+#' data("rse_gene_SRP009615")
+#'
+#' rse_gene_SRP009615 = normalize_counts(se = rse_gene_SRP009615,
+#'                                       method = "tmm")
 
 normalize_counts <- function(se,
                              assay = 1,
@@ -35,7 +43,8 @@ normalize_counts <- function(se,
     counts = assays(se)[[assay]]
 
     if (method == "tmm") {
-        norm.factors = calcNormFactors(counts)
+        norm.factors = calcNormFactors(counts,
+                                       method = "TMM")
         counts.norm = cpm(y = counts,
                           log = log,
                           lib.size = norm.factors * colSums(counts),

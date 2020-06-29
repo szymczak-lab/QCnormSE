@@ -30,6 +30,13 @@ to avoid taking log of zero.}
 object with normalized read counts in additional assay called <assay>.norm.
 }
 \description{
-Generates normalized read counts of RNA-seq data sets using several functions
-provided in the Bioconductor package \pkg{edgeR}.
+Generates normalized read counts of RNA-seq data sets using several
+functions provided in the Bioconductor package \pkg{edgeR}.
+}
+\examples{
+library(recount)
+data("rse_gene_SRP009615")
+
+rse_gene_SRP009615 = normalize_counts(se = rse_gene_SRP009615,
+                                      method = "tmm")
 }

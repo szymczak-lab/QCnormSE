@@ -4,7 +4,8 @@
 #' Performs dimensionality reduction using multi-dimensional scaling (MDS) or
 #' principal component analysis (PCA) on the sample level.
 #'
-#' @param se \code{\link[SummarizedExperiment]{RangedSummarizedExperiment-class}}
+#' @param se
+#' \code{\link[SummarizedExperiment]{RangedSummarizedExperiment-class}}
 #' object
 #' @param assay Character or integer. Name or number of assay containing
 #' expression data to be used for dimensionality reduction.
@@ -100,7 +101,8 @@ calculate_mds_pca <- function(se,
 #' Color and shape of each sample can be set based on different variables.
 #'
 #' @param res List. Output of \code{\link{calculate_mds_pca}}.
-#' @param se \code{\link[SummarizedExperiment]{RangedSummarizedExperiment-class}}
+#' @param se
+#' \code{\link[SummarizedExperiment]{RangedSummarizedExperiment-class}}
 #' object
 #' @param var.color Character or integer vector. Variable used to determine
 #' color. If NULL black color will be used for all samples.
@@ -110,8 +112,8 @@ calculate_mds_pca <- function(se,
 #' shape. If NULL filled circles will be used for all samples.
 #' @param shape.values Vector with symbols. Needs to provide a symbol for each
 #' unique value of var.shape.
-#' @param title Character. Title of the plot. If NULL title will be set based on
-#' method.
+#' @param title Character. Title of the plot. If NULL title will be set based
+#' on method.
 #' @param factor Numeric. Parameter of the function
 #' \code{\link[aplpack]{compute.bagplot}}. (default: 5)
 #' @param ellipse Logical. Should ellipses around points be drawn? (default:
@@ -212,7 +214,8 @@ plot_mds_pca <- function(res,
 #' @param res List. Output of \code{\link{calculate_mds_pca}}.
 #' \code{\link{calculate_mds_pca}}.
 #' @param dim Numeric vector (2). Numbers of components to be plotted.
-#' @param se \code{\link[SummarizedExperiment]{RangedSummarizedExperiment-class}}
+#' @param se
+#' \code{\link[SummarizedExperiment]{RangedSummarizedExperiment-class}}
 #' object
 #' @param var.color Character. Name of variable used to determine
 #' color. If NULL black color will be used for all samples.

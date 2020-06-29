@@ -5,7 +5,8 @@
 #' will be set to zero and if zero values are available a pseudocount will be
 #' added.
 #'
-#' @param se \code{\link[SummarizedExperiment]{RangedSummarizedExperiment-class}}
+#' @param se
+#' \code{\link[SummarizedExperiment]{RangedSummarizedExperiment-class}}
 #' object
 #' @param assay Character or integer. Name or number of assay containing
 #' expression data to be log transformed.

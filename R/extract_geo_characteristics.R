@@ -6,11 +6,12 @@
 #' to numeric and syntactically valid variable names are used for the new
 #' columns.
 #'
-#' @param se \code{\link[SummarizedExperiment]{RangedSummarizedExperiment-class}}
+#' @param se
+#' \code{\link[SummarizedExperiment]{RangedSummarizedExperiment-class}}
 #' object
-#' @param cols Character or integer. Name or number of column(s) in colData with
-#' GEO information (optional, will otherwise be extracted assuming column names
-#' contain term 'characteristics').
+#' @param cols Character or integer. Name or number of column(s) in colData
+#' with GEO information (optional, will otherwise be extracted assuming column
+#' names contain term 'characteristics').
 #'
 #' @return \code{\link[SummarizedExperiment]{RangedSummarizedExperiment-class}}
 #' object with GEO information in additional columns in colData()
@@ -19,7 +20,10 @@
 #' @export
 #'
 #' @examples
-#' se = get_geo_data(accession = "GSE31684")
+#' library(recount)
+#' data("rse_gene_SRP009615")
+#'
+#' rse_gene_SRP009615 = extract_geo_characteristics(se = rse_gene_SRP009615)
 
 extract_geo_characteristics <- function(se, cols = NULL) {
 
@@ -63,8 +67,11 @@ extract_geo_characteristics <- function(se, cols = NULL) {
 #' @keywords internal
 
 convert <- function(col.char) {
-    res = sapply(col.char, function(x) {
-        unlist(strsplit(x, ": "))[2]})
+    res = vapply(col.char,
+                  FUN = function(x) {
+                      unlist(strsplit(x, ": "))[2]},
+                  FUN.VALUE = character(1))
+
     res[which(res == "NA")] = NA
     res = all.is.numeric(res,
                          what = "vector",

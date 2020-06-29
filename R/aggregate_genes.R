@@ -8,7 +8,8 @@
 #' identifier by e.g. selecting the one with the largest average expression
 #' across all samples.
 #'
-#' @param se \code{\link[SummarizedExperiment]{RangedSummarizedExperiment-class}}
+#' @param se
+#' \code{\link[SummarizedExperiment]{RangedSummarizedExperiment-class}}
 #' object
 #' @param assay Character or integer. Name or number of assay used for
 #' aggregating.

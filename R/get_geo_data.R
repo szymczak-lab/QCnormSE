@@ -104,9 +104,6 @@ get_geo_data <- function(accession,
 
   return(se)
 
-  # prepare.sum.exp(se.gene = se.gene, assay = "expr", col.symbol = "symbol",
-  #                 se.file = file.path(se.dir, paste0("se_", accession, ".rds")),
-  #                 remove.zeros = FALSE, type.detection = type.detection)
 }
 
 
@@ -115,7 +112,8 @@ get_geo_data <- function(accession,
 #' Extracts date of scanning from original array files (e.g. CEL for Affymetrix
 #' and idat for Illumina arrays).
 #'
-#' @param se \code{\link[SummarizedExperiment]{RangedSummarizedExperiment-class}}
+#' @param se
+#' \code{\link[SummarizedExperiment]{RangedSummarizedExperiment-class}}
 #' object
 #' @param temp.dir Character. Destination directory to downloaded array files.
 #' @param tryFormats Character vector. Format strings for date to try.
@@ -176,9 +174,10 @@ extract_scan_date <- function(se,
                                  full.names = TRUE)
             }
 
-            #    ## example Illumina file
-            #    array.file = system.file("extdata", "idat", "4343238080_A_Grn.idat",
-            #                             package = "IlluminaDataTestFiles")
+            ### example Illumina file
+            #array.file = system.file("extdata", "idat",
+            #                         "4343238080_A_Grn.idat",
+            #                         package = "IlluminaDataTestFiles")
 
             if (length(array.file) == 0) {
                 stop(paste("no array file for sample", accession.samples[i],
@@ -190,22 +189,22 @@ extract_scan_date <- function(se,
             }
 
             if (grepl("cel", array.file, ignore.case = TRUE)) {
-                scan.date = as.character(get.celfile.dates(filenames = array.file))
+                scan.date = as.character(get.celfile.dates(filenames =
+                                                               array.file))
             } else if (grepl("idat", array.file, ignore.case = TRUE)) {
                 idat = readIDAT(file = array.file)
                 ind = which(idat$RunInfo[, "Name"] == "Scan")[1]
                 if (length(ind) == 0) {
-                    warning(paste("no scan date for file", array.file, "found!"))
+                    warning(paste("no scan date for file", array.file,
+                                  "found!"))
                 }
                 scan.date = idat$RunInfo[ind, "Date"]
                 scan.date = unlist(strsplit(scan.date, " "))[1]
-                #            scan.date = as.Date(scan.date, format = "%m/%d/%Y")
+                #scan.date = as.Date(scan.date, format = "%m/%d/%Y")
             } else {
                 ## Agilent file (based on GSE32062 with platform GPL6480)
                 temp = unlist(strsplit(readLines(array.file, n = 3)[[3]], "\t"))
                 scan.date = unlist(strsplit(temp[6], " "))[1]
-                #            stop(paste("no method available to extract date from filetype",
-                #                       array.file))
             }
             scan.date.all[i] = scan.date
         }
@@ -235,7 +234,8 @@ extract_scan_date <- function(se,
 #' Extracts detection P value information from each sample file.
 #'
 #' @param accession Character. Identifier of GEO data set (GSEXXX).
-#' @param se \code{\link[SummarizedExperiment]{RangedSummarizedExperiment-class}}
+#' @param se
+#' \code{\link[SummarizedExperiment]{RangedSummarizedExperiment-class}}
 #' object
 #'
 #' @return \code{\link[SummarizedExperiment]{RangedSummarizedExperiment-class}}

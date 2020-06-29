@@ -33,4 +33,6 @@
 #' \item hgnc_symbol: gene symbol (HGNC)
 #' \item entrezgene_id: NCBI gene identifier
 #' }
+#'
+#' @import recount
 "info.sex.genes"

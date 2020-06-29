@@ -5,7 +5,8 @@
 #' (method = "missing") or low expression (method = "detection.pvalue" or
 #' method = "zero").
 #'
-#' @param se \code{\link[SummarizedExperiment]{RangedSummarizedExperiment-class}}
+#' @param se
+#' \code{\link[SummarizedExperiment]{RangedSummarizedExperiment-class}}
 #' object
 #' @param assay Character or integer. Name or number of assay to be used for
 #' filtering.
@@ -19,6 +20,14 @@
 #' object with samples removed
 #'
 #' @export
+#'
+#' @examples
+#' library(recount)
+#' data("rse_gene_SRP009615")
+#'
+#' rse_gene_SRP009615 = remove_samples(se = rse_gene_SRP009615,
+#'                                     method = "zero",
+#'                                     freq = 0.4)
 
 remove_samples <- function(se,
                            assay = 1,

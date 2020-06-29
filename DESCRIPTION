@@ -25,25 +25,29 @@ Imports:
     BiocGenerics,
     caret,
     ComplexHeatmap,
-    DESeq2,
     edgeR,
     doppelgangR,
     GEOquery,
     GGally,
     ggplot2,
     ggpubr,
-    gPCA,
     grid,
     Hmisc,
     illuminaio,
     methods,
+    recount,
     S4Vectors,
     SummarizedExperiment,
     stats,    
     tidyr,
     viridis
 Suggests:
-    curatedBladderData
+    BiocStyle,
+    devtools,
+    knitr,
+    rmarkdown,
+    sva
 RoxygenNote: 6.1.1
 Depends: 
     R (>= 3.5)
+VignetteBuilder: knitr

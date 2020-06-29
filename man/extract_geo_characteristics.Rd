@@ -10,9 +10,9 @@ extract_geo_characteristics(se, cols = NULL)
 \item{se}{\code{\link[SummarizedExperiment]{RangedSummarizedExperiment-class}}
 object}
 
-\item{cols}{Character or integer. Name or number of column(s) in colData with
-GEO information (optional, will otherwise be extracted assuming column names
-contain term 'characteristics').}
+\item{cols}{Character or integer. Name or number of column(s) in colData
+with GEO information (optional, will otherwise be extracted assuming column
+names contain term 'characteristics').}
 }
 \value{
 \code{\link[SummarizedExperiment]{RangedSummarizedExperiment-class}}
@@ -25,5 +25,8 @@ to numeric and syntactically valid variable names are used for the new
 columns.
 }
 \examples{
-se = get_geo_data(accession = "GSE31684")
+library(recount)
+data("rse_gene_SRP009615")
+
+rse_gene_SRP009615 = extract_geo_characteristics(se = rse_gene_SRP009615)
 }

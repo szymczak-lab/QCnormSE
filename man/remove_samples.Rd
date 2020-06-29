@@ -30,3 +30,11 @@ Remove samples with large frequency of missing values
 (method = "missing") or low expression (method = "detection.pvalue" or
 method = "zero").
 }
+\examples{
+library(recount)
+data("rse_gene_SRP009615")
+
+rse_gene_SRP009615 = remove_samples(se = rse_gene_SRP009615,
+                                    method = "zero",
+                                    freq = 0.4)
+}
