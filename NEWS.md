@@ -9,12 +9,17 @@ check_sex()
 
 extract_scan_date()
 - col.sample.id can now also be a factor
+- additional possible date format for CEL files
+- different positions of scan date information possible in Agilent raw files
 
 detect_duplicate_samples()
 - more than one duplicate shown as vertical red line
 
 
 ## modifications
+
+check_batch_effects()
+- additional heatmap showing absolute adjusted r^2 values
 
 check_sex()
 - rownames can be used as gene identifier
@@ -27,6 +32,7 @@ provide access to fast implementation in R package coop
 
 extract_scan_date()
 add option to specify column with sample information
+
 
 # QCnormSE 0.99.0
 

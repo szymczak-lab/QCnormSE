@@ -31,23 +31,23 @@ get_geo_data <- function(accession,
                          detection.pvalue = FALSE,
                          scan.date = FALSE) {
 
-  #require("GEOquery")
-  #require("org.Hs.eg.db")
+    #require("GEOquery")
+    #require("org.Hs.eg.db")
 
     ## check that accession is a Series record
     if (!grepl("^GSE", accession)) {
         stop("accession needs to be a Series record (GSExxx)!")
     }
 
-  ## download from GEO
-  temp.l = getGEO(GEO = accession,
-                  GSEMatrix = TRUE,
-                  AnnotGPL = TRUE,
-                  destdir = temp.dir)
+    ## download from GEO
+    temp.l = getGEO(GEO = accession,
+                    GSEMatrix = TRUE,
+                    AnnotGPL = TRUE,
+                    destdir = temp.dir)
 
-  ## some studies contain samples from different platforms which are stored as
-  ## separate ExpressionSet objects
-  if (length(temp.l) > 1) {
+    ## some studies contain samples from different platforms which are stored as
+    ## separate ExpressionSet objects
+    if (length(temp.l) > 1) {
         if (is.null(platform)) {
             stop(paste("more than one ExpressionSet returned for accession",
                        accession, "and no platform specified!"))
@@ -65,44 +65,44 @@ get_geo_data <- function(accession,
             }
         }
 
-  } else {
-      eset = temp.l[[1]]
-  }
+    } else {
+        eset = temp.l[[1]]
+    }
 
-  ## convert to SummarizedExperiment object
-  se = as(eset, "SummarizedExperiment")
-  if (nrow(se) == 0) {
-      stop("no expression data found!")
-  }
+    ## convert to SummarizedExperiment object
+    se = as(eset, "SummarizedExperiment")
+    if (nrow(se) == 0) {
+        stop("no expression data found!")
+    }
 
-  ## perform log transformation if not already performed
-  expr = assays(se)[[1]]
-  iqr = IQR(as.numeric(expr),
-            na.rm = TRUE)
-  if (iqr > 100) {
-      print("performing log transformation ...")
-      se = log_transform(se = se,
-                         assay = 1,
-                         pseudocount = 1)
-  }
+    ## perform log transformation if not already performed
+    expr = assays(se)[[1]]
+    iqr = IQR(as.numeric(expr),
+              na.rm = TRUE)
+    if (iqr > 100) {
+        print("performing log transformation ...")
+        se = log_transform(se = se,
+                           assay = 1,
+                           pseudocount = 1)
+    }
 
-  ## extract detection p-values
-  if (detection.pvalue) {
-    se = extract_detection_pvalue(accession = accession,
-                                  se = se)
-  }
+    ## extract detection p-values
+    if (detection.pvalue) {
+        se = extract_detection_pvalue(accession = accession,
+                                      se = se)
+    }
 
-  if (scan.date) {
-    se = extract_scan_date(se = se,
-                           temp.dir = temp.dir)
+    if (scan.date) {
+        se = extract_scan_date(se = se,
+                               temp.dir = temp.dir)
 
-  }
+    }
 
-  ## remove .ch1* from colnames
-  colnames(colData(se)) = gsub("\\.ch1[0-9_.]*$", "",
-                               colnames(colData(se)))
+    ## remove .ch1* from colnames
+    colnames(colData(se)) = gsub("\\.ch1[0-9_.]*$", "",
+                                 colnames(colData(se)))
 
-  return(se)
+    return(se)
 
 }
 
@@ -195,8 +195,8 @@ extract_scan_date <- function(se,
             }
             if (length(array.file) > 1) {
                 warning(paste("more than one array file for sample",
-                           accession.samples[i],
-                           "found, thus using first file\n"))
+                              accession.samples[i],
+                              "found, thus using first file\n"))
                 array.file = array.file[1]
             }
 
@@ -208,14 +208,34 @@ extract_scan_date <- function(se,
                 if (length(ind) == 0) {
                     warning(paste("no scan date for file", array.file,
                                   "found!"))
+                    scan.date = NA
+                } else {
+                    scan.date = idat$RunInfo[ind, "Date"]
+                    scan.date = unlist(strsplit(scan.date, " "))[1]
+                    #scan.date = as.Date(scan.date, format = "%m/%d/%Y")
                 }
-                scan.date = idat$RunInfo[ind, "Date"]
-                scan.date = unlist(strsplit(scan.date, " "))[1]
-                #scan.date = as.Date(scan.date, format = "%m/%d/%Y")
             } else {
                 ## Agilent file (based on GSE32062 with platform GPL6480)
-                temp = unlist(strsplit(readLines(array.file, n = 3)[[3]], "\t"))
-                scan.date = unlist(strsplit(temp[6], " "))[1]
+                lines = readLines(array.file, n = 3)
+
+                ## identify index of date
+                lines.2.v = unlist(strsplit(lines[2], "\t"))
+                ind.scan = grep("Scan_Date", lines.2.v)
+                if (length(ind.scan) == 0) {
+                    warning(paste("no scan date for file", array.file,
+                                  "found!"))
+                    scan.date = NA
+                } else {
+                    if (length(ind.scan) > 1) {
+                        warning(paste("more than one scan date for file",
+                                      array.file,
+                                      "found, use first one!"))
+                        ind.scan = ind.scan[1]
+                    }
+                    lines.3.v = unlist(strsplit(lines[3], "\t",
+                                                useBytes = TRUE))
+                    scan.date = unlist(strsplit(lines.3.v[ind.scan], " "))[1]
+                }
             }
             scan.date.all[i] = scan.date
         }
@@ -259,7 +279,8 @@ get.celfile.date <- function(file) {
         date = strsplit(tmp$ScanDate, "T| ")[[1]][1]
         date = as.character(as.Date(date,
                                     tryFormats = c("%Y-%m-%d",
-                                                   "%m/%d/%y"),
+                                                   "%m/%d/%y",
+                                                   "%Y/%m/%d"),
                                     optional = TRUE))
     }
     return(date)
@@ -325,7 +346,7 @@ extract_detection_pvalue <- function(accession, se) {
             rownames(pval) = rownames(se)
 
             assays.l = c(assays(se),
-                            list(detection.pvalue = pval))
+                         list(detection.pvalue = pval))
             assays(se) = assays.l
         }
     }

@@ -22,7 +22,10 @@ List with the following components:
 \itemize{
 \item pval: Matrix with P-values between phenotype variables in rows and
 components in columns
-\item plot: Heatmap as \code{\link[ComplexHeatmap]{Heatmap-class}} object
+\item r2: Matrix with absolute adjusted r^2 values between phenotype
+variables in rows and components in columns
+\item plot: Plot with heatmaps as returned from the
+\code{\link[ggpubr]{ggarrange}} function
 }
 }
 \description{

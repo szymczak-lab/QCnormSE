@@ -19,12 +19,13 @@ First install the dependencies from CRAN:
 ## install CRAN dependencies
 cran.dep = c("aplpack",
              "caret",
+             "circlize",
              "GGally",
              "ggplot2",
+             "ggplotify",
              "ggpubr",
              "Hmisc",
-             "tidyr",
-             "viridis")
+             "tidyr")
 
 cran.dep.to.install = setdiff(cran.dep,
                      installed.packages()[, "Package"])

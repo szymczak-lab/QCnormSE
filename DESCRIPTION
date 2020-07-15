@@ -24,6 +24,7 @@ Imports:
     aplpack,
     BiocGenerics,
     caret,
+    circlize,
     ComplexHeatmap,
     coop,
     edgeR,
@@ -31,6 +32,7 @@ Imports:
     GEOquery,
     GGally,
     ggplot2,
+    ggplotify,
     ggpubr,
     grid,
     Hmisc,
@@ -40,8 +42,7 @@ Imports:
     S4Vectors,
     SummarizedExperiment,
     stats,    
-    tidyr,
-    viridis
+    tidyr
 Suggests:
     BiocStyle,
     devtools,
