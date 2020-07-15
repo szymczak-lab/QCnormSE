@@ -4,7 +4,7 @@
 \alias{check_batch_effects}
 \title{Check for batch effects}
 \usage{
-check_batch_effects(se, res.pca, col.test = NULL)
+check_batch_effects(se, res.pca, col.test = NULL, title = NULL)
 }
 \arguments{
 \item{se}{\code{\link[SummarizedExperiment]{RangedSummarizedExperiment-class}}
@@ -14,6 +14,8 @@ object}
 
 \item{col.test}{Character or integer vector. Column(s) in colData() with
 phenotype information to be tested.}
+
+\item{title}{Character. Title of the plot.}
 }
 \value{
 List with the following components:
@@ -40,7 +42,6 @@ col.test = c("Age.of.patient",
              "Duration.of.psoriasis",
              "Induration",
              "Overall.erythema",
-             "Patient.identifyier",
              "Scaling",
              "Sex",
              "scan.date")

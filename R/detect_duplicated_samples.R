@@ -9,8 +9,11 @@
 #' object
 #' @param assay Character or integer. Name or number of assay containing
 #' log transformed expression values.
+#' @param title Character. Title of the plot.
+#' @param use.fast Logical. Should fast implementation of covariance matrix
+#' estimation provided in the R package coop (default: TRUE).
 #' @param cor.method Character. Correlation coefficient to be used ("pearson",
-#' "spearman" (default) or "kendall").
+#' "spearman" or "kendall"). Ignored if use.fast = TRUE.
 #' @param ... Additional arguments passed to the
 #' \code{\link[doppelgangR]{outlierFinder}} function.
 #'
@@ -21,9 +24,10 @@
 #' \item plot: Histogram as returned by \code{\link[ggpubr]{gghistogram}}
 #' }
 #'
+#' @importFrom coop covar
 #' @importFrom doppelgangR outlierFinder
 #' @importFrom methods as
-#' @importFrom stats cor
+#' @importFrom stats cor sd
 #' @export
 #'
 #' @examples
@@ -33,19 +37,35 @@
 
 detect_duplicated_samples <- function(se,
                                       assay = 1,
-                                      cor.method = "spearman",
+                                      title = NULL,
+                                      use.fast = TRUE,
+                                      cor.method = "pearson",
                                       ...) {
 
-    ## convert to ExpressionSet using only specified assay
     if (is.character(assay) && !(assay %in% names(assays(se)))) {
         stop(paste("assay", assay, "not found!"))
     }
     expr = assays(se)[[assay]]
 
+    ## remove genes with missing values
+    if (any(is.na(expr))) {
+        se.reduced = remove_genes(se = se,
+                                  assay = assay,
+                                  method = "missing",
+                                  freq = 0)
+        expr = assays(se.reduced)[[assay]]
+        print(paste("removed", nrow(se) - nrow(se.reduced),
+                    "genes with missing values!"))
+    }
+
     ## estimate pairwise correlation
-    cor.m = cor(expr,
-                method = cor.method,
-                use = "pairwise.complete.obs")
+    if (use.fast) {
+        expr.std = apply(expr, 2, function(x) {x / sd(x)})
+        cor.m = covar(expr.std)
+    } else {
+        cor.m = cor(expr,
+                    method = cor.method)
+    }
 
     ## outlier detection using function in doppelgangR package
     cor.m[lower.tri(cor.m)] = NA
@@ -71,6 +91,7 @@ detect_duplicated_samples <- function(se,
     g = gghistogram(data = info.cor$cor,
                     y = "..density..",
                     xlab = "pairwise correlations",
+                    title = title,
                     fill = "lightgray",
                     bins = 20,
                     alpha = 0,
@@ -78,7 +99,7 @@ detect_duplicated_samples <- function(se,
                     rug = TRUE)
 
     if (length(ind.out) > 0) {
-        g = g + geom_vline(aes(xintercept = info.out$similarity),
+        g = g + geom_vline(xintercept = info.out$similarity,
                            color = "red",
                            size = 0.75)
     }

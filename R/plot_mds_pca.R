@@ -46,6 +46,7 @@ calculate_mds_pca <- function(se,
     }
     expr = assays(se)[[assay]]
 
+    ## remove genes with missing values
     if (any(is.na(expr))) {
         se.reduced = remove_genes(se = se,
                                   assay = assay,
@@ -119,6 +120,7 @@ calculate_mds_pca <- function(se,
 #' @param ellipse Logical. Should ellipses around points be drawn? (default:
 #' FALSE).
 #' @param ellipse.type Character. Type of ellipse as given in
+#' \code{\link[ggpubr]{ggscatter}} (default: "convex").
 #'
 #' @return List with the following components:
 #' \itemize{

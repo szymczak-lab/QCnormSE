@@ -35,7 +35,8 @@ on method.}
 \item{ellipse}{Logical. Should ellipses around points be drawn? (default:
 FALSE).}
 
-\item{ellipse.type}{Character. Type of ellipse as given in}
+\item{ellipse.type}{Character. Type of ellipse as given in
+\code{\link[ggpubr]{ggscatter}} (default: "convex").}
 }
 \value{
 List with the following components:

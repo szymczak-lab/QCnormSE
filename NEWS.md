@@ -1,3 +1,33 @@
+
+# QCnormSE 0.99.1
+
+## bug fixes
+
+check_sex()
+- sex.column can now also be a factor
+- error if none of the genes in se overlap with genes in info.sex.genes
+
+extract_scan_date()
+- col.sample.id can now also be a factor
+
+detect_duplicate_samples()
+- more than one duplicate shown as vertical red line
+
+
+## modifications
+
+check_sex()
+- rownames can be used as gene identifier
+- add ellipses to MDS plot
+
+detect_duplicate_samples()
+- improve performance by using default values of function stats::cor() and 
+provide access to fast implementation in R package coop
+- add option to set title of plot
+
+extract_scan_date()
+add option to specify column with sample information
+
 # QCnormSE 0.99.0
 
-* initial commit
+- initial commit

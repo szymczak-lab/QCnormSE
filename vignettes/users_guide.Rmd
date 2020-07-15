@@ -24,7 +24,8 @@ microarray and RNA-seq experiments in a common framework.
 
 The package uses the SummarizedExperiment class from Bioconductor 
 to store expression values as well as gene annotation and phenotype information 
-of transcriptome data sets in a single object.
+of transcriptome data sets in a single object. For more information on the
+SummarizedExperiment class see https://bioconductor.org/packages/release/bioc/vignettes/SummarizedExperiment/inst/doc/SummarizedExperiment.html.
 
 The package provides functions to detect outlier, duplicated or mislabeled 
 samples and to evaluate potential batch effects together with low
@@ -96,6 +97,9 @@ table(se.ma$disease.state)
 For this data set, GEO also provides the raw files (.CEL files). Thus, the date
 of scanning can be extracted using the function `extract_scan_date()` and is
 then stored as an additional column called `scan.date` in the `colData()` slot.
+Please note that this step will take a while since all the .CEL files have to
+be downloaded. It can be skipped for the further analyses presented in this
+vignette.
 
 ```{r, eval = TRUE, results="hide"}
 se.ma = extract_scan_date(se = se.ma)
@@ -444,7 +448,7 @@ res.pca = calculate_mds_pca(se = se.seq,
                             method = "pca")
 ```
 
-One potential batch in RNA-seq studies is the total read count. Thus, the 
+One potential batch effect in RNA-seq studies is the total read count. Thus, the 
 variable `mapped_read_count` is used to color the PCA plot and also included
 in the `check_batch_effects()` function. Other potentially interesting 
 biological variables are case-control status and age.

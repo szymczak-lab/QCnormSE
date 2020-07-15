@@ -5,7 +5,8 @@
 \title{Sex check}
 \usage{
 check_sex(se, assay = 1, gene.column = "symbol", info.sex.genes,
-  sex.column = "sex", col = c("red", "blue"), title = NULL)
+  sex.column = "sex", col = c("red", "blue"), title = NULL,
+  ellipse = TRUE, ellipse.type = "norm")
 }
 \arguments{
 \item{se}{\code{\link[SummarizedExperiment]{RangedSummarizedExperiment-class}}
@@ -15,7 +16,7 @@ object}
 expression data to be used for sex check.}
 
 \item{gene.column}{Character. Column in rowData containing gene symbols
-(default: "symbol").}
+(default: "symbol") or "rownames" if rownames should be used.}
 
 \item{info.sex.genes}{data.frame. Information about sex chromosomal genes
 (see \code{info.sex.genes}).}
@@ -27,6 +28,12 @@ expression data to be used for sex check.}
 
 \item{title}{Character. Title of the plot. If NULL title will be set to
 "MDS (sex specific genes)".}
+
+\item{ellipse}{Logical. Should ellipses around points be drawn? (default:
+TRUE).}
+
+\item{ellipse.type}{Character. Type of ellipse as given in
+\code{\link[ggpubr]{ggscatter}} (default: "norm").}
 
 \item{genes}{Character vector. Symbols of sex specific genes to be used in
 classification (default: genes collected from the literature, see details).}

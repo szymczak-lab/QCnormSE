@@ -4,7 +4,8 @@
 \alias{detect_duplicated_samples}
 \title{Identification of duplicated samples}
 \usage{
-detect_duplicated_samples(se, assay = 1, cor.method = "spearman", ...)
+detect_duplicated_samples(se, assay = 1, title = NULL,
+  use.fast = TRUE, cor.method = "pearson", ...)
 }
 \arguments{
 \item{se}{\code{\link[SummarizedExperiment]{RangedSummarizedExperiment-class}}
@@ -13,8 +14,13 @@ object}
 \item{assay}{Character or integer. Name or number of assay containing
 log transformed expression values.}
 
+\item{title}{Character. Title of the plot.}
+
+\item{use.fast}{Logical. Should fast implementation of covariance matrix
+estimation provided in the R package coop (default: TRUE).}
+
 \item{cor.method}{Character. Correlation coefficient to be used ("pearson",
-"spearman" (default) or "kendall").}
+"spearman" or "kendall"). Ignored if use.fast = TRUE.}
 
 \item{...}{Additional arguments passed to the
 \code{\link[doppelgangR]{outlierFinder}} function.}

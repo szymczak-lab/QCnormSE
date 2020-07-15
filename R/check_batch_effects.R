@@ -12,6 +12,7 @@
 #' @param col.test Character or integer vector. Column(s) in colData() with
 #' phenotype information to be tested.
 #' @param res.pca List. Output of \code{\link{calculate_mds_pca}}.
+#' @param title Character. Title of the plot.
 #'
 #' @return List with the following components:
 #' \itemize{
@@ -37,7 +38,6 @@
 #'              "Duration.of.psoriasis",
 #'              "Induration",
 #'              "Overall.erythema",
-#'              "Patient.identifyier",
 #'              "Scaling",
 #'              "Sex",
 #'              "scan.date")
@@ -48,7 +48,8 @@
 
 check_batch_effects <- function(se,
                                 res.pca,
-                                col.test = NULL) {
+                                col.test = NULL,
+                                title = NULL) {
 
     pheno = colData(se)
     if (!is.null(col.test)) {
@@ -60,23 +61,25 @@ check_batch_effects <- function(se,
     pheno = pheno[, sort(colnames(pheno)), drop = FALSE]
     scores = res.pca$scores
 
-    ## F statistic of linear regression for each PC and phenotype variable
-    pval = matrix(ncol = ncol(scores),
-                  nrow = ncol(pheno),
-                  dimnames = list(colnames(pheno),
-                                  colnames(scores)))
+    ## linear regression for each PC and phenotype variable
+    ## P-value of F statistic and adjusted R-squared
+    pval = abs.adj.r.squared = matrix(ncol = ncol(scores),
+                                  nrow = ncol(pheno),
+                                  dimnames = list(colnames(pheno),
+                                                  colnames(scores)))
     for (i in seq_len(nrow(pval))) {
-        for (j in seq_len(ncol(pval))) {
-            if (length(unique(na.omit(pheno[, i]))) < 2) {
-                warning(paste0("only one level found in ",
-                              colnames(pheno)[i], "!"))
-            } else {
+        if (length(unique(na.omit(pheno[, i]))) < 2) {
+            warning(paste0("only one level found in ",
+                           colnames(pheno)[i], "!\n"))
+        } else {
+            for (j in seq_len(ncol(pval))) {
                 fit = lm(scores[, j] ~ pheno[, i])
                 s = summary(fit)
                 pval[i, j] = pf(q = s$fstatistic[1],
                                 df1 = s$fstatistic[2],
                                 df2 = s$fstatistic[3],
                                 lower.tail = FALSE)
+                abs.adj.r.squared[i, j] = abs(s$adj.r.squared)
             }
         }
     }
@@ -84,7 +87,8 @@ check_batch_effects <- function(se,
     ## remove rows with NA
     pval = na.omit(pval)
     if (nrow(pval) == 0) {
-        stop("no variables with P-values!")
+        warning("no variables with P-values!")
+        return(NULL)
     }
 
     ## heatmap
@@ -110,7 +114,8 @@ check_batch_effects <- function(se,
                  heatmap_legend_param = list(border = "black"),
                  row_names_side = "left",
                  column_names_side = "top",
-                 column_names_rot = 0)
+                 column_names_rot = 0,
+                 column_title = title)
     #print(hm)
 
     return(list(pval = pval,

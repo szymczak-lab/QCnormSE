@@ -12,7 +12,7 @@
 #' @param info.sex.genes data.frame. Information about sex chromosomal genes
 #' (see \code{info.sex.genes}).
 #' @param gene.column Character. Column in rowData containing gene symbols
-#' (default: "symbol").
+#' (default: "symbol") or "rownames" if rownames should be used.
 #' @param sex.column Character. Column in colData containing sex information.
 #' @param col Character vector. Colours to be used for coloring sex in MDS plot
 #' (default: red and blue).
@@ -20,6 +20,10 @@
 #' classification (default: genes collected from the literature, see details).
 #' @param title Character. Title of the plot. If NULL title will be set to
 #' "MDS (sex specific genes)".
+#' @param ellipse Logical. Should ellipses around points be drawn? (default:
+#' TRUE).
+#' @param ellipse.type Character. Type of ellipse as given in
+#' \code{\link[ggpubr]{ggscatter}} (default: "norm").
 #'
 #' @return List with the following components:
 #' \itemize{
@@ -47,7 +51,9 @@ check_sex <- function(se,
                       info.sex.genes,
                       sex.column = "sex",
                       col = c("red", "blue"),
-                      title = NULL) {
+                      title = NULL,
+                      ellipse = TRUE,
+                      ellipse.type = "norm") {
 
     ## extract sex information
     pheno = colData(se)
@@ -68,12 +74,22 @@ check_sex <- function(se,
 
     ## extract genes
     anno = rowData(se)
-    if (!(gene.column %in% colnames(anno))) {
-        stop(paste("column", gene.column, "not found in rowData!"))
+    if (gene.column == "rownames") {
+        anno$gene.to.use = rownames(anno)
+    } else {
+        if (!(gene.column %in% colnames(anno))) {
+            stop(paste("column", gene.column, "not found in rowData!"))
+        }
+        if (is.factor(anno[, gene.column])) {
+            anno$gene.to.use = as.character(anno[, gene.column])
+        } else {
+            anno$gene.to.use = anno[, gene.column]
+        }
     }
+
     # does not work with SimpleCharacterList (e.g. used in ERP009768)
     anno$gene.char = unstrsplit(#as.character(anno[, gene.column]),
-        anno[, gene.column],
+        anno$gene.to.use,
         sep = "|")
 
     ## identify column of info.sex.genes to use
@@ -85,6 +101,9 @@ check_sex <- function(se,
                       FUN = function(x) {
                         intersect(anno$gene.char, x)
                       })
+    if (length(match.l) == 0) {
+        stop("none of the genes in se overlap with genes in info.sex.genes!")
+    }
     no.match = vapply(match.l,
                       FUN = length,
                       FUN.VALUE = numeric(1))
@@ -114,7 +133,9 @@ check_sex <- function(se,
                         dim = c(1, 2),
                         var.color = "sex",
                         title = title,
-                        palette = col)$plot
+                        palette = col,
+                        ellipse = ellipse,
+                        ellipse.type = ellipse.type)$plot
     #        print(g)
 
     ## classification using knn

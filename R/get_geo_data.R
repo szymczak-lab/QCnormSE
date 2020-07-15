@@ -115,6 +115,8 @@ get_geo_data <- function(accession,
 #' @param se
 #' \code{\link[SummarizedExperiment]{RangedSummarizedExperiment-class}}
 #' object
+#' @param col.sample.id Character or integer vector. Column in colData() with
+#' sample information.
 #' @param temp.dir Character. Destination directory to downloaded array files.
 #' @param tryFormats Character vector. Format strings for date to try.
 #'
@@ -122,7 +124,6 @@ get_geo_data <- function(accession,
 #' object with scan date added as column scan.date in colData.
 #'
 #' @import GEOquery
-#' @importFrom affyio get.celfile.dates
 #' @importFrom illuminaio readIDAT
 #'
 #' @export
@@ -133,14 +134,23 @@ get_geo_data <- function(accession,
 #' se.probeset = extract_scan_date(se = se.probeset)
 
 extract_scan_date <- function(se,
+                              col.sample.id = "geo_accession",
                               temp.dir = tempdir(),
                               tryFormats = c("%Y-%m-%d",
                                              "%Y/%m/%d",
                                              "%m/%d/%Y",
+                                             "%m/%d/%y",
                                              "%m-%d-%Y",
                                              "%d-%b-%Y")) {
 
-    accession.samples = se$geo_accession
+    if (!(col.sample.id %in% colnames(colData(se)))) {
+        stop(paste("column", col.sample.id, "not available in colData!"))
+    }
+    accession.samples = as.character(colData(se)[, col.sample.id])
+    if (!all(grepl("^GSM", accession.samples))) {
+        stop(paste("column", col.sample.id,
+                   "must contain valid GEO sample ids (GSMxxx)!"))
+    }
 
     files.available = vapply(
         X = accession.samples,
@@ -184,13 +194,14 @@ extract_scan_date <- function(se,
                            "found!"))
             }
             if (length(array.file) > 1) {
-                stop(paste("more than one array file for sample",
-                           accession.samples[i], "found!"))
+                warning(paste("more than one array file for sample",
+                           accession.samples[i],
+                           "found, thus using first file\n"))
+                array.file = array.file[1]
             }
 
             if (grepl("cel", array.file, ignore.case = TRUE)) {
-                scan.date = as.character(get.celfile.dates(filenames =
-                                                               array.file))
+                scan.date = get.celfile.date(file = array.file)
             } else if (grepl("idat", array.file, ignore.case = TRUE)) {
                 idat = readIDAT(file = array.file)
                 ind = which(idat$RunInfo[, "Name"] == "Scan")[1]
@@ -226,6 +237,32 @@ extract_scan_date <- function(se,
     }
     return(se)
 
+}
+
+
+# internal function used by extract_scan_date()
+#
+# extracts date from Affymetrix CEL files
+# based on code from the affio function get.celfile.dates()
+# but modified since sometimes tm$ScanDate is empty
+#
+#' @importFrom affyio read.celfile.header
+#'
+#' @keywords internal
+
+get.celfile.date <- function(file) {
+
+    tmp = read.celfile.header(file, info = "full")
+    if (length(tmp$ScanDate) == 0) {
+        date = NA
+    } else {
+        date = strsplit(tmp$ScanDate, "T| ")[[1]][1]
+        date = as.character(as.Date(date,
+                                    tryFormats = c("%Y-%m-%d",
+                                                   "%m/%d/%y"),
+                                    optional = TRUE))
+    }
+    return(date)
 }
 
 

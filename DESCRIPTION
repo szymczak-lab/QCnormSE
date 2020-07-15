@@ -1,7 +1,7 @@
 Package: QCnormSE
 Type: Package
 Title: Quality Control of Normalized Gene Expression Data
-Version: 0.99.0
+Version: 0.99.1
 Authors@R: person("Silke", "Szymczak", email = "szymczak@medinfo.uni-kiel.de",
                   role = c("aut", "cre"))
 Description: Implementation of several quality control procedures and processing 
@@ -25,6 +25,7 @@ Imports:
     BiocGenerics,
     caret,
     ComplexHeatmap,
+    coop,
     edgeR,
     doppelgangR,
     GEOquery,
