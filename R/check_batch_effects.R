@@ -66,10 +66,14 @@ check_batch_effects <- function(se,
 
     ## linear regression for each PC and phenotype variable
     ## P-value of F statistic and adjusted R-squared
+    cnames = sprintf("%s (%.2f%%)",
+                     colnames(scores),
+                     res.pca$var.explained * 100)
+
     pval = abs.adj.r.squared = matrix(ncol = ncol(scores),
-                                  nrow = ncol(pheno),
-                                  dimnames = list(colnames(pheno),
-                                                  colnames(scores)))
+                                      nrow = ncol(pheno),
+                                      dimnames = list(colnames(pheno),
+                                                      cnames))
     for (i in seq_len(nrow(pval))) {
         if (length(unique(na.omit(pheno[, i]))) < 2) {
             warning(paste0("only one level found in ",
@@ -200,7 +204,7 @@ plot_heatmap <- function(matrix,
                  heatmap_legend_param = list(border = "black"),
                  row_names_side = "left",
                  column_names_side = "top",
-                 column_names_rot = 0,
+                 column_names_rot = 45,
                  column_title = title)
 
     return(hm)
