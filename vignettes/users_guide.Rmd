@@ -20,7 +20,7 @@ output:
 
 The QCnormSE package provides implementations of several quality control (QC)
 procedures and processing steps for normalized gene expression data sets from 
-microarray and RNA-seq experiments in a common framework. 
+microarray and RNA-seq experiments within a unified framework. 
 
 The package uses the SummarizedExperiment class from Bioconductor 
 to store expression values as well as gene annotation and phenotype information 
@@ -110,10 +110,10 @@ table(se.ma$scan.date)
 
 ```
 
-The scanning date can be used as a surrogate for batch which can be 
-automatically defined using the function `define_batches()`. However,
-the `colData()` slot already contains batch information which will be renamed 
-so that it is not overwritten.
+The scanning date can be used as a surrogate for unwanted technical variability 
+(batch effects) which can be automatically defined using the function 
+`define_batches()`. However, the `colData()` slot already contains batch 
+information which will be renamed so that it is not overwritten.
 
 ```{r, eval = TRUE}
 ## rename
@@ -135,7 +135,7 @@ The comparison shows that both batch definitions are equivalent.
 
 ### Detection of outlier samples
 
-One plot to detect outlier samples is a boxplot of the distribution of 
+One method to detect outlier samples utilises a boxplot of the distribution of 
 expression values for each sample which can be generated using the function 
 `plot_distribution()`.
 
@@ -273,8 +273,8 @@ Sample swaps or mislabeled samples can be identified using the function
 `check_sex()` which predicts sex based on the expression of sex chromosomal
 genes and compares it to the reported sex in the `colData` slot.
 
-Information about genes on the X and Y chromosome for humans is provided in the
-package.
+Information about genes on the X and Y chromosome for humans is provided as 
+part of the package.
 
 ```{r, eval = TRUE}
 ## load info
@@ -298,7 +298,8 @@ Parkinson's disease human brain samples (SRP015668).
 
 ## Prepare data set
 
-The fastq files are available in the SRA archive (https://www.ncbi.nlm.nih.gov/sra?term=SRP015668).
+The fastq files are available in the Sequence Read Archive (SRA,
+https://www.ncbi.nlm.nih.gov/sra?term=SRP015668).
 In addition, raw read counts are provided by recount2 
 (https://jhubiostatistics.shinyapps.io/recount) and can be accessed using the
 Bioconductor package `recount`. The gene-level SummarizedExperiment object is
@@ -386,10 +387,9 @@ The normalized counts are given in a second assay called `counts.norm`.
 ### Detection of outlier samples
 
 As in the microarray example, the distribution of the expression values for 
-each sample can be visualized using the function `plot_distribution()`. The
-name of the assay that should be plotted needs to be specified explicitly since
-the default uses the first one, which would be `counts` containing the raw
-counts.
+each sample can be visualized using the function `plot_distribution()`. Here, 
+the name of the assay that should be plotted needs to be specified to generate
+a boxplot based on `counts.norm` instead of `counts`. 
 
 ```{r}
 ## boxplot
@@ -404,10 +404,11 @@ plot_distribution(se = se.seq,
 
 ```
 
-One sample has very low values and three other samples also have more genes
-with low values compared to the rest. 
-
-The outliers can also clearly be seen in the PCA plots.
+Gene expression values show comparable distributions across the majority of the
+given samples. However, for one sample the overall gene expression has been 
+estimated to be very low. For another three samples a considerably high 
+variability of gene expression values has been observed. All of these outliers 
+are clearly visible within a PCA plot.
 
 ```{r}
 ## PCA
@@ -448,7 +449,7 @@ res.pca = calculate_mds_pca(se = se.seq,
                             method = "pca")
 ```
 
-One potential batch effect in RNA-seq studies is the total read count. Thus, the 
+One potential batch in RNA-seq studies is the total read count. Thus, the 
 variable `mapped_read_count` is used to color the PCA plot and also included
 in the `check_batch_effects()` function. Other potentially interesting 
 biological variables are case-control status and age.
@@ -502,9 +503,9 @@ check_sex(se = se.seq,
 ```
 
 In contrast to the microarray study, no clear clustering of sexes is shown. 
-The reason might be a wrong annotation of the samples,  but it could also be 
-this approach of sex specific expression does not work properly in brain 
-samples. Additional tests of further studies with brain samples are necessary.
+The reason might be a wrong annotation of the samples. However, the approach of
+sex-specific expression could be invalid in brain samples. Additional tests 
+based on further studies of brain samples would be necessary.
 
 # Session info
 
