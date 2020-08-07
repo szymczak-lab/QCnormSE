@@ -245,7 +245,11 @@ define_batches <- function(se,
     }
 
     scan.date = colData(se)[, col.scan.date]
+    if (!is(scan.date, "Date")) {
+        scan.date = as.Date(scan.date)
+    }
     names(scan.date) = colnames(se)
+
     scan.date = sort(scan.date)
     diff = c(0, as.numeric(diff(scan.date)))
     diff[diff == diff.ignore] = 0

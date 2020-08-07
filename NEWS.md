@@ -7,6 +7,9 @@ check_sex()
 - sex.column can now also be a factor
 - error if none of the genes in se overlap with genes in info.sex.genes
 
+define_batches()
+- ensure that scan.date is of class Date
+
 extract_scan_date()
 - col.sample.id can now also be a factor
 - additional possible date format for CEL files
@@ -15,6 +18,12 @@ extract_scan_date()
 detect_duplicate_samples()
 - more than one duplicate shown as vertical red line
 
+plot_mds_pca_2d()
+- remove unused levels of var.color and var.shape
+
+## new features
+
+new function combine_se_objects()
 
 ## modifications
 

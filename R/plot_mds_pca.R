@@ -364,6 +364,10 @@ prepare_var_for_plot <- function(se,
         values = as.factor(values)
     }
 
+    if (is.factor(values)) {
+        droplevels(values)
+    }
+
     return(values)
 }
 
