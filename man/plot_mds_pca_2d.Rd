@@ -4,10 +4,19 @@
 \alias{plot_mds_pca_2d}
 \title{MDS or PCA plot (2D)}
 \usage{
-plot_mds_pca_2d(res, dim = c(1, 2), se, var.color = NULL,
-  palette = NULL, var.shape = NULL, shape.values = NULL,
-  title = NULL, factor = 5, ellipse = FALSE,
-  ellipse.type = "convex")
+plot_mds_pca_2d(
+  res,
+  dim = c(1, 2),
+  se,
+  var.color = NULL,
+  palette = NULL,
+  var.shape = NULL,
+  shape.values = NULL,
+  title = NULL,
+  factor = 5,
+  ellipse = FALSE,
+  ellipse.type = "convex"
+)
 }
 \arguments{
 \item{res}{List. Output of \code{\link{calculate_mds_pca}}.

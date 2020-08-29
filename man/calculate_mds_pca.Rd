@@ -4,8 +4,14 @@
 \alias{calculate_mds_pca}
 \title{MDS or PCA}
 \usage{
-calculate_mds_pca(se, assay = 1, method = "pca", dist = "euclidean",
-  center = TRUE, scale = FALSE)
+calculate_mds_pca(
+  se,
+  assay = 1,
+  method = "pca",
+  dist = "euclidean",
+  center = TRUE,
+  scale = FALSE
+)
 }
 \arguments{
 \item{se}{\code{\link[SummarizedExperiment]{RangedSummarizedExperiment-class}}

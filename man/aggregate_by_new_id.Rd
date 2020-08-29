@@ -4,8 +4,13 @@
 \alias{aggregate_by_new_id}
 \title{Aggregate expression values based on new identifiers}
 \usage{
-aggregate_by_new_id(se, assay = 1, col.new = "symbol", sep = "///",
-  method = "max_median")
+aggregate_by_new_id(
+  se,
+  assay = 1,
+  col.new = "symbol",
+  sep = "///",
+  method = "max_median"
+)
 }
 \arguments{
 \item{se}{\code{\link[SummarizedExperiment]{RangedSummarizedExperiment-class}}
@@ -21,7 +26,7 @@ to be used as new gene identifier.}
 (default: "///" used by GEO).}
 
 \item{method}{Method to use for aggregating: "max_median" (default),
-"max_mean", "sum"}
+"max_mean"}
 }
 \value{
 \code{\link[SummarizedExperiment]{RangedSummarizedExperiment-class}}
@@ -31,7 +36,7 @@ object with aggregated expression values
 For statistical analysis original gene identifiers (e.g. vendor specific
 probe set identifiers) often need to be mapped to new gene identifiers (e.g.
 Ensembl gene identifiers or HGNC gene symbols). This function aggregates
-expression values of original idenfiers that map to the same new gene
+expression values of original identifiers that map to the same new gene
 identifier by e.g. selecting the one with the largest average expression
 across all samples.
 }
@@ -49,6 +54,7 @@ print(se.probeset)
 
 ## aggregate by gene symbol
 se.gene = aggregate_by_new_id(se = se.probeset,
+                              assay = "exprs.log",
                               col.new = "Gene.symbol",
                               sep = "///")
 print(se.gene)

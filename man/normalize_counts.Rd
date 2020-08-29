@@ -4,8 +4,14 @@
 \alias{normalize_counts}
 \title{Normalize raw read counts of RNA-seq experiments}
 \usage{
-normalize_counts(se, assay = 1, method = "tmm",
-  col.gene.length = "bp_length", log = TRUE, prior.count = 2)
+normalize_counts(
+  se,
+  assay = 1,
+  method = "tmm",
+  col.gene.length = "bp_length",
+  log = TRUE,
+  prior.count = 2
+)
 }
 \arguments{
 \item{se}{\code{\link[SummarizedExperiment]{RangedSummarizedExperiment-class}}

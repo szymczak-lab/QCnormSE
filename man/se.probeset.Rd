@@ -4,9 +4,11 @@
 \name{se.probeset}
 \alias{se.probeset}
 \title{Example data set (microarray, probeset level)}
-\format{A
+\format{
+A
 \code{\link[SummarizedExperiment]{RangedSummarizedExperiment-class}} with
-22283 probesets and 5 samples.}
+22283 probesets and 5 samples.
+}
 \source{
 \url{https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE6710}
 }

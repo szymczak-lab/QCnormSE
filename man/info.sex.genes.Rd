@@ -4,14 +4,16 @@
 \name{info.sex.genes}
 \alias{info.sex.genes}
 \title{Genes on the X and Y chromosome}
-\format{A data.frame with the following columns:
+\format{
+A data.frame with the following columns:
 \itemize{
 \item ensembl_gene_id: Ensembl gene identifier
 \item chromosome_name: chromosome ('X' or 'Y')
 \item gene_biotype: gene type (e.g. 'protein_coding')
 \item hgnc_symbol: gene symbol (HGNC)
 \item entrezgene_id: NCBI gene identifier
-}}
+}
+}
 \usage{
 info.sex.genes
 }

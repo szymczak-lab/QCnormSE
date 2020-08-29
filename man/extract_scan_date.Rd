@@ -4,9 +4,13 @@
 \alias{extract_scan_date}
 \title{Extract scan date}
 \usage{
-extract_scan_date(se, col.sample.id = "geo_accession",
-  temp.dir = tempdir(), tryFormats = c("\%Y-\%m-\%d", "\%Y/\%m/\%d",
-  "\%m/\%d/\%Y", "\%m/\%d/\%y", "\%m-\%d-\%Y", "\%d-\%b-\%Y"))
+extract_scan_date(
+  se,
+  col.sample.id = "geo_accession",
+  temp.dir = tempdir(),
+  tryFormats = c("\%Y-\%m-\%d", "\%Y/\%m/\%d", "\%m/\%d/\%Y", "\%m/\%d/\%y",
+    "\%m-\%d-\%Y", "\%d-\%b-\%Y")
+)
 }
 \arguments{
 \item{se}{\code{\link[SummarizedExperiment]{RangedSummarizedExperiment-class}}

@@ -4,7 +4,7 @@
 #' For statistical analysis original gene identifiers (e.g. vendor specific
 #' probe set identifiers) often need to be mapped to new gene identifiers (e.g.
 #' Ensembl gene identifiers or HGNC gene symbols). This function aggregates
-#' expression values of original idenfiers that map to the same new gene
+#' expression values of original identifiers that map to the same new gene
 #' identifier by e.g. selecting the one with the largest average expression
 #' across all samples.
 #'
@@ -18,7 +18,7 @@
 #' @param sep Character. Separator for multiple gene identifiers or names
 #' (default: "///" used by GEO).
 #' @param method Method to use for aggregating: "max_median" (default),
-#' "max_mean", "sum"
+#' "max_mean"
 #'
 #' @return \code{\link[SummarizedExperiment]{RangedSummarizedExperiment-class}}
 #' object with aggregated expression values
@@ -41,6 +41,7 @@
 #'
 #' ## aggregate by gene symbol
 #' se.gene = aggregate_by_new_id(se = se.probeset,
+#'                               assay = "exprs.log",
 #'                               col.new = "Gene.symbol",
 #'                               sep = "///")
 #' print(se.gene)
@@ -102,12 +103,6 @@ aggregate_by_new_id <- function(se,
             ind.max = which.max(avg)
             expr.new[i, ] = expr.temp[ind.max, ]
             id.new[i] = genes.original[ind.max]
-        } else if (method == "sum") {
-            expr.new[i, ] = apply(expr.temp, 2, sum)
-
-            ## possible improvement: keep all original identifiers and
-            ## corresponding annotation
-            id.new[i] = genes.original[1]
         } else {
             stop(paste("method", method, "not defined!"))
         }
@@ -115,17 +110,17 @@ aggregate_by_new_id <- function(se,
     expr.new = rbind(expr.new.unique,
                      expr.new)
     id.new = c(id.new.unique, id.new)
-    dimnames(expr.new) = list(id.new,
-                              colnames(expr))
+    rownames(expr.new) = id.new
 
-    assays.list = list(expr.new)
-    name = ifelse(is.numeric(assay),
-                  names(assays(se))[assay], assay)
-    names(assays.list) = name
-    se.new = SummarizedExperiment(assays = assays.list,
+    assays.list.new = lapply(assays(se), function(x) {
+        x[id.new, ]
+    })
+
+    se.new = SummarizedExperiment(assays = assays.list.new,
                                   colData = colData(se),
                                   rowData =
-                                      rowData(se)[id.new, ])
+                                      rowData(se)[id.new, ],
+                                  metadata = metadata(se))
 
     rownames(se.new) = rowData(se.new)[, col.new]
     return(se.new)

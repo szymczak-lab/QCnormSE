@@ -1,7 +1,7 @@
 Package: QCnormSE
 Type: Package
 Title: Quality Control of Normalized Gene Expression Data
-Version: 0.99.1
+Version: 0.99.2
 Authors@R: c(
     person("Silke", "Szymczak", 
     email = "szymczak@medinfo.uni-kiel.de",
@@ -54,7 +54,7 @@ Suggests:
     knitr,
     rmarkdown,
     sva
-RoxygenNote: 6.1.1
+RoxygenNote: 7.1.1
 Depends: 
     R (>= 3.5)
 VignetteBuilder: knitr

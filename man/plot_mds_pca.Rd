@@ -4,9 +4,18 @@
 \alias{plot_mds_pca}
 \title{MDS or PCA plot}
 \usage{
-plot_mds_pca(res, se, var.color = NULL, palette = NULL,
-  var.shape = NULL, shape.values = NULL, title = NULL, factor = 5,
-  ellipse = FALSE, ellipse.type = "convex")
+plot_mds_pca(
+  res,
+  se,
+  var.color = NULL,
+  palette = NULL,
+  var.shape = NULL,
+  shape.values = NULL,
+  title = NULL,
+  factor = 5,
+  ellipse = FALSE,
+  ellipse.type = "convex"
+)
 }
 \arguments{
 \item{res}{List. Output of \code{\link{calculate_mds_pca}}.}

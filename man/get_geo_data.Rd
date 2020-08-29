@@ -4,8 +4,13 @@
 \alias{get_geo_data}
 \title{Export gene expression data sets from GEO}
 \usage{
-get_geo_data(accession, temp.dir = tempdir(), platform = NULL,
-  detection.pvalue = FALSE, scan.date = FALSE)
+get_geo_data(
+  accession,
+  temp.dir = tempdir(),
+  platform = NULL,
+  detection.pvalue = FALSE,
+  scan.date = FALSE
+)
 }
 \arguments{
 \item{accession}{Character. Identifier of GEO data set (GSEXXX).}

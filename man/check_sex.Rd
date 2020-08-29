@@ -4,9 +4,17 @@
 \alias{check_sex}
 \title{Sex check}
 \usage{
-check_sex(se, assay = 1, gene.column = "symbol", info.sex.genes,
-  sex.column = "sex", col = c("red", "blue"), title = NULL,
-  ellipse = TRUE, ellipse.type = "norm")
+check_sex(
+  se,
+  assay = 1,
+  gene.column = "symbol",
+  info.sex.genes,
+  sex.column = "sex",
+  col = c("red", "blue"),
+  title = NULL,
+  ellipse = TRUE,
+  ellipse.type = "norm"
+)
 }
 \arguments{
 \item{se}{\code{\link[SummarizedExperiment]{RangedSummarizedExperiment-class}}

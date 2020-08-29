@@ -4,8 +4,14 @@
 \alias{detect_duplicated_samples}
 \title{Identification of duplicated samples}
 \usage{
-detect_duplicated_samples(se, assay = 1, title = NULL,
-  use.fast = TRUE, cor.method = "pearson", ...)
+detect_duplicated_samples(
+  se,
+  assay = 1,
+  title = NULL,
+  use.fast = TRUE,
+  cor.method = "pearson",
+  ...
+)
 }
 \arguments{
 \item{se}{\code{\link[SummarizedExperiment]{RangedSummarizedExperiment-class}}

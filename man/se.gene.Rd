@@ -4,9 +4,11 @@
 \name{se.gene}
 \alias{se.gene}
 \title{Example data set (microarray, gene level)}
-\format{A
+\format{
+A
 \code{\link[SummarizedExperiment]{RangedSummarizedExperiment-class}} with
-12502 genes and 26 samples.}
+12502 genes and 26 samples.
+}
 \source{
 \url{https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE6710}
 }

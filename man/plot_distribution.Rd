@@ -4,8 +4,13 @@
 \alias{plot_distribution}
 \title{Plot distribution of expression values for each sample}
 \usage{
-plot_distribution(se, assay = 1, method = "quantileplot", coef = 5,
-  title = paste("Distribution of expression", "values in each sample"))
+plot_distribution(
+  se,
+  assay = 1,
+  method = "quantileplot",
+  coef = 5,
+  title = paste("Distribution of expression", "values in each sample")
+)
 }
 \arguments{
 \item{se}{\code{\link[SummarizedExperiment]{RangedSummarizedExperiment-class}}

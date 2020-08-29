@@ -1,4 +1,12 @@
 
+# QCnormSE 0.99.2
+
+## modifications
+
+aggregate_by_new_id()  
+- remove method "sum" since not all assays can be kept if expression values of
+several probes are summed up
+
 # QCnormSE 0.99.1
 
 ## bug fixes
