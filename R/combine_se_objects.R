@@ -36,7 +36,7 @@
 #' table(se.combined$info)
 
 combine_se_objects <- function(se.l,
-                             info = NULL) {
+                               info = NULL) {
 
     ## identify common genes
     genes = unlist(lapply(se.l, rownames))
@@ -57,10 +57,11 @@ combine_se_objects <- function(se.l,
 
     ## merge SEs
     se.all = NULL
-    for (i in 1:length(se.l)) {
+    for (i in seq_len(length(se.l))) {
         se = se.l[[i]][genes.all, ]
         colData(se) = colData(se)[, colnames.all]
         rowData(se) = NULL
+        metadata(se) = list()
         if (i == 1) {
             se.all = se
         } else {
@@ -73,11 +74,15 @@ combine_se_objects <- function(se.l,
             stop("info and se.l need to have the same length!")
         }
         info = rep(info,
-                   times = sapply(se.l, ncol))
+                   times = vapply(se.l,
+                                  FUN = ncol,
+                                  FUN.VALUE = numeric(1)))
         if ("info" %in% colnames.all) {
             warning("column info will be overwritten!")
         }
         se.all$info = info
     }
+
+    metadata(se.all) = list()
     return(se.all)
 }

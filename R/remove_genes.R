@@ -82,7 +82,11 @@ remove_genes <- function(se,
             stop(paste("method", method, "not known!"))
         }
 
-        ind.rm = which(crit > freq)
+        if (freq == 1) {
+            ind.rm = which(crit == freq)
+        } else {
+            ind.rm = which(crit > freq)
+        }
     }
     if (length(ind.rm) > 0) {
         if (verbose) {

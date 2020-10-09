@@ -24,7 +24,7 @@ read counts.}
 "rpkm".}
 
 \item{col.gene.length}{Character or integer. Name or number of column in
-rowData containing gene length information.}
+rowData containing gene length information. Only used by method "rpkm".}
 
 \item{log}{Logical. Should log2 transformed values be returned?}
 

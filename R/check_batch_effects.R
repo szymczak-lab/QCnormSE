@@ -174,7 +174,8 @@ plot_heatmap <- function(matrix,
         ## categorize P-values
         breaks = c(0, 10^-4, 10^-3, 10^-2, 0.05, 1)
         matrix = apply(matrix, c(1, 2), function(x) {
-            cut(x, breaks = breaks)
+            cut(x, breaks = breaks,
+                include.lowest = TRUE)
         })
 
         col = c("white", "yellow", "orange", "red", "darkred")
@@ -182,7 +183,7 @@ plot_heatmap <- function(matrix,
                        "(0.01,0.05]",
                        "(0.001,0.01]",
                        "(0.0001,0.001]",
-                       "(0,0.0001]")
+                       "[0,0.0001]")
 
         name = "P-value"
 

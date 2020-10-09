@@ -209,7 +209,7 @@ plot_mds_pca <- function(res,
 
 #' MDS or PCA plot (2D)
 #'
-#' Plots two sepcified components estimated with the function
+#' Plots two specified components estimated with the function
 #' \code{\link{calculate_mds_pca}}. Color and shape of each sample can be set
 #' based on different variables.
 #'
@@ -396,6 +396,9 @@ get_outliers_mds_pca_2d <- function(scores,
         ind.out = apply(out, 1, function(x) {
             which(scores[, dim[1]] == x[1] & scores[, dim[2]] == x[2])
         })
+        if (is.list(ind.out)) {
+            ind.out = unique(unlist(ind.out))
+        }
         info.out = data.frame(id = rownames(scores)[ind.out],
                               criterion = rep(criterion, length(ind.out)),
                               stringsAsFactors = FALSE)

@@ -166,6 +166,12 @@ extract_scan_date <- function(se,
         warning("no raw files with scan date available!")
     } else {
 
+        ## create temp.dir if it does not exist
+        if (!file.exists(temp.dir)) {
+            dir.create(temp.dir,
+                       recursive = TRUE)
+        }
+
         scan.date.all = NULL
         for (i in seq_len(length(accession.samples))) {
 
