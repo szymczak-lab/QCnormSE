@@ -24,6 +24,7 @@
 #' object with aggregated expression values
 #'
 #' @import SummarizedExperiment
+#' @importFrom S4Vectors metadata
 #' @importFrom stats IQR median quantile
 #' @export
 #'
@@ -76,8 +77,8 @@ aggregate_by_new_id <- function(se,
     ## extract info for unique genes
     tab = table(anno[, col.new])
     genes.unique = names(tab)[tab == 1]
-    genes.unique.original = rownames(anno)[which(anno[, col.new] %in%
-                                                     genes.unique)]
+    genes.unique.original = rownames(anno)[
+        which(anno[, col.new] %in% genes.unique)]
     expr.new.unique = expr[genes.unique.original, ]
     id.new.unique = genes.unique.original
 
@@ -89,7 +90,8 @@ aggregate_by_new_id <- function(se,
                       ncol = ncol(expr))
     id.new = rep(NA, no.genes)
     for (i in seq_len(no.genes)) {
-        genes.original = rownames(expr)[which(anno[, col.new] == genes.new[i])]
+        genes.original = rownames(expr)[
+            which(anno[, col.new] == genes.new[i])]
         expr.temp = expr[genes.original, , drop = FALSE]
 
         if (grepl("max", method)) {
@@ -118,8 +120,7 @@ aggregate_by_new_id <- function(se,
 
     se.new = SummarizedExperiment(assays = assays.list.new,
                                   colData = colData(se),
-                                  rowData =
-                                      rowData(se)[id.new, ],
+                                  rowData = rowData(se)[id.new, ],
                                   metadata = metadata(se))
 
     rownames(se.new) = rowData(se.new)[, col.new]

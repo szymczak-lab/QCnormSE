@@ -396,6 +396,9 @@ get_outliers_mds_pca_2d <- function(scores,
         ind.out = apply(out, 1, function(x) {
             which(scores[, dim[1]] == x[1] & scores[, dim[2]] == x[2])
         })
+        if (is.list(ind.out)) {
+            ind.out = unique(unlist(ind.out))
+        }
         info.out = data.frame(id = rownames(scores)[ind.out],
                               criterion = rep(criterion, length(ind.out)),
                               stringsAsFactors = FALSE)

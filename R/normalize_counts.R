@@ -12,7 +12,7 @@
 #' @param method Method to use for normalizing: "tmm" (default), "cpm",
 #' "rpkm".
 #' @param col.gene.length Character or integer. Name or number of column in
-#' rowData containing gene length information.
+#' rowData containing gene length information. Only used by method "rpkm".
 #' @param log Logical. Should log2 transformed values be returned?
 #' @param prior.count Numeric. Average count to be added to each observation
 #' to avoid taking log of zero.

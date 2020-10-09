@@ -1,9 +1,28 @@
 
 # QCnormSE 0.99.2
 
+## bug fixes
+
+combine_se_objects()  
+- set metadata of combined SE object to empty list 
+
+extract_scan_date()  
+- create temp.dir if it does not exist
+
+get_outliers_mds_pca_2d() (internal function)  
+- convert from list to vector if duplicate values occur in outlier detection
+
+plot_heatmap()  
+- include lower limits of intervals when defining color categories of P-values 
+
+remove_genes()  
+- if freq = 1 remove all genes for which criterion is fullfilled for all 
+samples
+
 ## modifications
 
-aggregate_by_new_id()  
+aggregate_by_new_id() 
+- keep all assays  
 - remove method "sum" since not all assays can be kept if expression values of
 several probes are summed up
 
