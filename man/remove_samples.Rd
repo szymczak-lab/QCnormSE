@@ -16,7 +16,7 @@ filtering.}
 \item{method}{Method to determine samples to be removed: "missing",
 "detection.pvalue", "zero".}
 
-\item{freq}{Numeric. If more than freq*100 \% of the genes fulfill criterion,
+\item{freq}{Numeric. If at least freq*100 \% of the genes fulfill criterion,
 the sample is removed.}
 
 \item{verbose}{Logical. Should number of removed samples be reported?}

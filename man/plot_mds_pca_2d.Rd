@@ -58,7 +58,7 @@ List with the following components:
 }
 }
 \description{
-Plots two sepcified components estimated with the function
+Plots two specified components estimated with the function
 \code{\link{calculate_mds_pca}}. Color and shape of each sample can be set
 based on different variables.
 }
