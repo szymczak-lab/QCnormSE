@@ -4,10 +4,8 @@
 ## modifications
 
 remove_samples()
-- replace > freq of genes with >= freq of genes to fulfill criterion 
-
-remove_genes()
-- replace > freq of samples with >= freq of samples to fulfill criterion 
+- if freq = 1 remove all samples for which criterion is fullfilled for all 
+genes
 
 
 # QCnormSE 0.99.2

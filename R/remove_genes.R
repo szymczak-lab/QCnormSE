@@ -13,7 +13,7 @@
 #' @param method Method to determine genes to be removed: "constant", "missing",
 #' "detection.pvalue", "zero", "edgeR" (using
 #' \code{\link[edgeR]{filterByExpr}}).
-#' @param freq Numeric. If at least freq*100 \% of the samples fulfill
+#' @param freq Numeric. If more than freq*100 \% of the samples fulfill
 #' criterion, the gene is removed (not used if method = "constant").
 #' @param verbose Logical. Should number of removed genes be reported?
 #'
@@ -82,7 +82,12 @@ remove_genes <- function(se,
             stop(paste("method", method, "not known!"))
         }
 
-        ind.rm = which(crit >= freq)
+        if (freq == 1) {
+            ind.rm = which(crit == freq)
+        } else {
+            ind.rm = which(crit > freq)
+        }
+
     }
     if (length(ind.rm) > 0) {
         if (verbose) {

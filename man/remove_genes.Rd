@@ -17,7 +17,7 @@ filtering.}
 "detection.pvalue", "zero", "edgeR" (using
 \code{\link[edgeR]{filterByExpr}}).}
 
-\item{freq}{Numeric. If at least freq*100 \% of the samples fulfill
+\item{freq}{Numeric. If more than freq*100 \% of the samples fulfill
 criterion, the gene is removed (not used if method = "constant").}
 
 \item{verbose}{Logical. Should number of removed genes be reported?}
