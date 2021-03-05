@@ -87,7 +87,6 @@ remove_genes <- function(se,
         } else {
             ind.rm = which(crit > freq)
         }
-
     }
     if (length(ind.rm) > 0) {
         if (verbose) {
