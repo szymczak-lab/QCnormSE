@@ -7,6 +7,9 @@ remove_samples()
 - if freq = 1 remove all samples for which criterion is fullfilled for all 
 genes
 
+detect_duplicated_samples()  
+- add parameters to optionally remove genes with missing values and to specify 
+method to deal with missing values in cor and covar functions
 
 # QCnormSE 0.99.2
 

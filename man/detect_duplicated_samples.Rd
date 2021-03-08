@@ -9,7 +9,9 @@ detect_duplicated_samples(
   assay = 1,
   title = NULL,
   use.fast = TRUE,
+  remove.genes = TRUE,
   cor.method = "pearson",
+  use = "everything",
   ...
 )
 }
@@ -25,8 +27,15 @@ log transformed expression values.}
 \item{use.fast}{Logical. Should fast implementation of covariance matrix
 estimation provided in the R package coop (default: TRUE).}
 
+\item{remove.genes}{Logical. Should genes with missing values be removed?
+(default: TRUE).}
+
 \item{cor.method}{Character. Correlation coefficient to be used ("pearson",
 "spearman" or "kendall"). Ignored if use.fast = TRUE.}
+
+\item{use}{Character. Method to deal with missing values as in
+\code{\link[stats]{cor}} and \code{\link[coop]{covar}} (default:
+"everything").}
 
 \item{...}{Additional arguments passed to the
 \code{\link[doppelgangR]{outlierFinder}} function.}

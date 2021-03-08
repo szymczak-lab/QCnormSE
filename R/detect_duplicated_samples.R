@@ -12,8 +12,13 @@
 #' @param title Character. Title of the plot.
 #' @param use.fast Logical. Should fast implementation of covariance matrix
 #' estimation provided in the R package coop (default: TRUE).
+#' @param remove.genes Logical. Should genes with missing values be removed?
+#' (default: TRUE).
 #' @param cor.method Character. Correlation coefficient to be used ("pearson",
 #' "spearman" or "kendall"). Ignored if use.fast = TRUE.
+#' @param use Character. Method to deal with missing values as in
+#' \code{\link[stats]{cor}} and \code{\link[coop]{covar}} (default:
+#' "everything").
 #' @param ... Additional arguments passed to the
 #' \code{\link[doppelgangR]{outlierFinder}} function.
 #'
@@ -39,7 +44,9 @@ detect_duplicated_samples <- function(se,
                                       assay = 1,
                                       title = NULL,
                                       use.fast = TRUE,
+                                      remove.genes = TRUE,
                                       cor.method = "pearson",
+                                      use = "everything",
                                       ...) {
 
     if (is.character(assay) && !(assay %in% names(assays(se)))) {
@@ -48,7 +55,7 @@ detect_duplicated_samples <- function(se,
     expr = assays(se)[[assay]]
 
     ## remove genes with missing values
-    if (any(is.na(expr))) {
+    if (remove.genes && any(is.na(expr))) {
         se.reduced = remove_genes(se = se,
                                   assay = assay,
                                   method = "missing",
@@ -60,11 +67,15 @@ detect_duplicated_samples <- function(se,
 
     ## estimate pairwise correlation
     if (use.fast) {
-        expr.std = apply(expr, 2, function(x) {x / sd(x)})
-        cor.m = covar(expr.std)
+        expr.std = apply(expr, 2, function(x) {x / sd(x, na.rm = TRUE)})
+        cor.m = covar(expr.std,
+                      use = use)
+        dimnames(cor.m) = list(colnames(expr.std),
+                               colnames(expr.std))
     } else {
         cor.m = cor(expr,
-                    method = cor.method)
+                    method = cor.method,
+                    use = use)
     }
 
     ## outlier detection using function in doppelgangR package
