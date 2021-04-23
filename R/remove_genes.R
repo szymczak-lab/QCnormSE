@@ -15,6 +15,10 @@
 #' \code{\link[edgeR]{filterByExpr}}).
 #' @param freq Numeric. If more than freq*100 \% of the samples fulfill
 #' criterion, the gene is removed (not used if method = "constant").
+#' @param min.count Numeric. Minimum count required for at least some samples (
+#' used only if method = "edgeR").
+#' @param min.total.count Numeric. Minimum total count required (
+#' used only if method = "edgeR").
 #' @param verbose Logical. Should number of removed genes be reported?
 #'
 #' @return \code{\link[SummarizedExperiment]{RangedSummarizedExperiment-class}}
@@ -45,6 +49,8 @@ remove_genes <- function(se,
                          assay = 1,
                          method,
                          freq = 0.25,
+                         min.count = 10,
+                         min.total.count = 15,
                          verbose = FALSE) {
 
     if (is.character(assay) && !(assay %in% names(assays(se)))) {
@@ -60,12 +66,10 @@ remove_genes <- function(se,
         sd = apply(expr, 1, sd)
         ind.rm = which(sd == 0)
     } else if (method == "edgeR") {
-        n = floor(ncol(se) * freq)
-        group = c(rep(1, n), rep(2, ncol(se) - n))
         info.keep = filterByExpr(y = expr,
-                                 group = group,
-                                 min.count = 10,
-                                 min.total.count = 15)
+                                 min.count = min.count,
+                                 min.total.count = min.total.count,
+                                 min.prop = freq)
         ind.rm = which(!info.keep)
     } else {
         if (method == "missing") {

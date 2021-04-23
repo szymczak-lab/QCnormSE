@@ -1,4 +1,16 @@
 
+# QCnormSE 0.99.4
+
+## modifications
+
+remove_genes()  
+- additional arguments in edgeR method
+
+## bug fix
+
+remove_genes()  
+- correct passing of freq argument in edgeR method
+
 # QCnormSE 0.99.3
 
 ## modifications
