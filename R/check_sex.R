@@ -144,9 +144,16 @@ check_sex <- function(se,
     }
     expr = assays(se.use)[[assay]]
 
+    ## check if k needs to be reduced due to small group size
+    min = min(table(se$sex))
+    if (min < 5) {
+        k = ifelse(min %% 2 == 0, min - 1, min)
+    } else {
+        k = 5
+    }
     res.knn = knn3(x = t(expr),
                    y = factor(se.use$sex),
-                   k = 5)
+                   k = k)
     sex.pred = predict(res.knn,
                        t(expr),
                        type = "class")

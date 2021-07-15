@@ -1,4 +1,14 @@
 
+# QCnormSE 0.99.4.9000
+
+## bug fix
+
+check_sex()
+- set k to odd number <= minimal group size
+
+extract_scan_date()
+- use correct sample file
+
 # QCnormSE 0.99.4
 
 ## modifications

@@ -1,7 +1,7 @@
 Package: QCnormSE
 Type: Package
 Title: Quality Control of Normalized Gene Expression Data
-Version: 0.99.4
+Version: 0.99.4.9000
 Authors@R: c(
     person("Silke", "Szymczak", 
     email = "szymczak@medinfo.uni-kiel.de",

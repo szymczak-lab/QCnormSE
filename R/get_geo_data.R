@@ -152,17 +152,21 @@ extract_scan_date <- function(se,
                    "must contain valid GEO sample ids (GSMxxx)!"))
     }
 
-    files.available = vapply(
+    files = vapply(
         X = accession.samples,
         FUN = function(x) {
             temp = getGEOSuppFiles(GEO = x,
                                    makeDirectory = FALSE,
                                    fetch_files = FALSE)
-            ifelse(is.null(temp), FALSE, TRUE)
+            if (nrow(temp) > 1) {
+                stop(paste("more than one supplementary file",
+                           "found for sample", x))
+            }
+            ifelse(is.null(temp), NA, temp$fname)
         },
-        FUN.VALUE = logical(1))
+        FUN.VALUE = character(1))
 
-    if (all(!files.available)) {
+    if (all(is.na(files))) {
         warning("no raw files with scan date available!")
     } else {
 
@@ -172,78 +176,69 @@ extract_scan_date <- function(se,
                        recursive = TRUE)
         }
 
-        scan.date.all = NULL
-        for (i in seq_len(length(accession.samples))) {
+        scan.date.all = rep(NA, length(files))
+        for (i in seq_len(length(files))) {
 
-            array.file = dir(temp.dir,
-                             pattern = accession.samples[i],
-                             full.names = TRUE)
-
-            ## avoid downloading of existing file
-            if (length(array.file) == 0) {
-                getGEOSuppFiles(GEO = accession.samples[i],
-                                makeDirectory = FALSE,
-                                baseDir = temp.dir,
-                                fetch_files = TRUE)
-                array.file = dir(temp.dir,
-                                 pattern = accession.samples[i],
-                                 full.names = TRUE)
-            }
-
-            ### example Illumina file
-            #array.file = system.file("extdata", "idat",
-            #                         "4343238080_A_Grn.idat",
-            #                         package = "IlluminaDataTestFiles")
-
-            if (length(array.file) == 0) {
-                stop(paste("no array file for sample", accession.samples[i],
-                           "found!"))
-            }
-            if (length(array.file) > 1) {
-                warning(paste("more than one array file for sample",
-                              accession.samples[i],
-                              "found, thus using first file\n"))
-                array.file = array.file[1]
-            }
-
-            if (grepl("cel", array.file, ignore.case = TRUE)) {
-                scan.date = get.celfile.date(file = array.file)
-            } else if (grepl("idat", array.file, ignore.case = TRUE)) {
-                idat = readIDAT(file = array.file)
-                ind = which(idat$RunInfo[, "Name"] == "Scan")[1]
-                if (length(ind) == 0) {
-                    warning(paste("no scan date for file", array.file,
-                                  "found!"))
-                    scan.date = NA
-                } else {
-                    scan.date = idat$RunInfo[ind, "Date"]
-                    scan.date = unlist(strsplit(scan.date, " "))[1]
-                    #scan.date = as.Date(scan.date, format = "%m/%d/%Y")
-                }
+            if (is.na(files[i])) {
+                warning(paste("no array file for sample", accession.samples[i],
+                              "found!"))
             } else {
-                ## Agilent file (based on GSE32062 with platform GPL6480)
-                lines = readLines(array.file, n = 3)
 
-                ## identify index of date
-                lines.2.v = unlist(strsplit(lines[2], "\t"))
-                ind.scan = grep("Scan_Date", lines.2.v)
-                if (length(ind.scan) == 0) {
-                    warning(paste("no scan date for file", array.file,
-                                  "found!"))
-                    scan.date = NA
-                } else {
-                    if (length(ind.scan) > 1) {
-                        warning(paste("more than one scan date for file",
-                                      array.file,
-                                      "found, use first one!"))
-                        ind.scan = ind.scan[1]
-                    }
-                    lines.3.v = unlist(strsplit(lines[3], "\t",
-                                                useBytes = TRUE))
-                    scan.date = unlist(strsplit(lines.3.v[ind.scan], " "))[1]
+                array.file = file.path(temp.dir,
+                                       files[i])
+
+                ## avoid downloading of existing file
+                if (!file.exists(array.file)) {
+                    getGEOSuppFiles(GEO = accession.samples[i],
+                                    makeDirectory = FALSE,
+                                    baseDir = temp.dir,
+                                    fetch_files = TRUE)
                 }
+
+                ### example Illumina file
+                #array.file = system.file("extdata", "idat",
+                #                         "4343238080_A_Grn.idat",
+                #                         package = "IlluminaDataTestFiles")
+
+                if (grepl("cel", array.file, ignore.case = TRUE)) {
+                    scan.date = get.celfile.date(file = array.file)
+                } else if (grepl("idat", array.file, ignore.case = TRUE)) {
+                    idat = readIDAT(file = array.file)
+                    ind = which(idat$RunInfo[, "Name"] == "Scan")[1]
+                    if (length(ind) == 0) {
+                        warning(paste("no scan date for file", array.file,
+                                      "found!"))
+                        scan.date = NA
+                    } else {
+                        scan.date = idat$RunInfo[ind, "Date"]
+                        scan.date = unlist(strsplit(scan.date, " "))[1]
+                        #scan.date = as.Date(scan.date, format = "%m/%d/%Y")
+                    }
+                } else {
+                    ## Agilent file (based on GSE32062 with platform GPL6480)
+                    lines = readLines(array.file, n = 3)
+
+                    ## identify index of date
+                    lines.2.v = unlist(strsplit(lines[2], "\t"))
+                    ind.scan = grep("Scan_Date", lines.2.v)
+                    if (length(ind.scan) == 0) {
+                        warning(paste("no scan date for file", array.file,
+                                      "found!"))
+                        scan.date = NA
+                    } else {
+                        if (length(ind.scan) > 1) {
+                            warning(paste("more than one scan date for file",
+                                          array.file,
+                                          "found, use first one!"))
+                            ind.scan = ind.scan[1]
+                        }
+                        lines.3.v = unlist(strsplit(lines[3], "\t",
+                                                    useBytes = TRUE))
+                        scan.date = unlist(strsplit(lines.3.v[ind.scan], " "))[1]
+                    }
+                }
+                scan.date.all[i] = scan.date
             }
-            scan.date.all[i] = scan.date
         }
 
         scan.date.formats = lapply(tryFormats, function(x) {
