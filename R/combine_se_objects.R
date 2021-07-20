@@ -38,6 +38,13 @@
 combine_se_objects <- function(se.l,
                                info = NULL) {
 
+    ## check column names
+    cnames.l = lapply(se.l, colnames)
+    tab = table(unlist(cnames.l))
+    if (any(tab > 1)) {
+        stop("some column names are not unique")
+    }
+
     ## identify common genes
     genes = unlist(lapply(se.l, rownames))
     tab = table(genes)

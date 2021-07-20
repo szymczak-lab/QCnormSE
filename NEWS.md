@@ -6,6 +6,9 @@
 check_sex()
 - set k to odd number <= minimal group size
 
+combine_se_objects()
+- check if column names are unique
+
 extract_scan_date()
 - use correct sample file
 
