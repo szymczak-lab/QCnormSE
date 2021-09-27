@@ -8,6 +8,7 @@ check_sex()
 
 combine_se_objects()
 - check if column names are unique
+- add option to merge meta data
 
 extract_scan_date()
 - use correct sample file

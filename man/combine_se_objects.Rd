@@ -4,7 +4,7 @@
 \alias{combine_se_objects}
 \title{Merge SummarizedExperiments objects}
 \usage{
-combine_se_objects(se.l, info = NULL)
+combine_se_objects(se.l, info = NULL, merge.metadata = TRUE)
 }
 \arguments{
 \item{se.l}{list of \code{\link[SummarizedExperiment]{RangedSummarizedExperiment-class}}
@@ -13,6 +13,9 @@ objects}
 \item{info}{Vector of same length as se.l. Contains additional information
 about each SE object (e.g. study name) which will be replicated for each
 sample in the corresponding SE object and stored in a column named info.}
+
+\item{merge.metadata}{Logical. Should information in metadata be merged?
+(default: TRUE).}
 }
 \value{
 \code{\link[SummarizedExperiment]{RangedSummarizedExperiment-class}}

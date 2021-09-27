@@ -11,6 +11,8 @@
 #' @param info Vector of same length as se.l. Contains additional information
 #' about each SE object (e.g. study name) which will be replicated for each
 #' sample in the corresponding SE object and stored in a column named info.
+#' @param merge.metadata Logical. Should information in metadata be merged?
+#' (default: TRUE).
 #'
 #' @return \code{\link[SummarizedExperiment]{RangedSummarizedExperiment-class}}
 #' object with all samples but no rowData() information
@@ -36,7 +38,8 @@
 #' table(se.combined$info)
 
 combine_se_objects <- function(se.l,
-                               info = NULL) {
+                               info = NULL,
+                               merge.metadata = TRUE) {
 
     ## check column names
     cnames.l = lapply(se.l, colnames)
@@ -53,6 +56,15 @@ combine_se_objects <- function(se.l,
         stop("no overlapping genes found!")
     }
 
+    ## identify common columns in rowData
+    annonames = unlist(lapply(se.l, function(x) {
+        colnames(rowData(x))}))
+    tab = table(annonames)
+    annonames.all = names(tab)[tab == length(se.l)]
+    if (length(annonames.all) == 0) {
+        warning("no overlapping colnames in rowData found!")
+    }
+
     ## identify common columns in colData
     colnames = unlist(lapply(se.l, function(x) {
         colnames(colData(x))}))
@@ -67,13 +79,35 @@ combine_se_objects <- function(se.l,
     for (i in seq_len(length(se.l))) {
         se = se.l[[i]][genes.all, ]
         colData(se) = colData(se)[, colnames.all]
-        rowData(se) = NULL
+        if (length(annonames.all) > 0) {
+            rowData(se) = rowData(se)[, annonames.all]
+        } else {
+            rowData(se) = NULL
+        }
         metadata(se) = list()
         if (i == 1) {
             se.all = se
         } else {
             se.all = cbind(se.all, se)
         }
+    }
+
+    ## merge metadata
+    if (merge.metadata) {
+        metanames = unlist(lapply(se.l, function(x) {
+            names(metadata(x))}))
+        tab = table(metanames)
+        metanames.all = names(tab)[tab == length(se.l)]
+        if (length(metanames.all) == 0) {
+            warning("no overlapping names in metadata found")
+        }
+        meta.data.l = lapply(metanames.all, function(n) {
+            temp = sapply(se.l, function(se) {
+                metadata(se)[[n]]})
+            paste(sort(unique(temp)),
+                  collapse = "|")})
+        names(meta.data.l) = metanames.all
+        metadata(se.all) = meta.data.l
     }
 
     if (!is.null(info)) {
@@ -90,6 +124,5 @@ combine_se_objects <- function(se.l,
         se.all$info = info
     }
 
-    metadata(se.all) = list()
     return(se.all)
 }
