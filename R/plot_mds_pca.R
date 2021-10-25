@@ -83,6 +83,7 @@ calculate_mds_pca <- function(se,
         d = dist(t(expr))
         fit = cmdscale(d, eig = TRUE, k = 3)
         scores = fit$points
+        colnames(scores) = paste0("C", 1:ncol(scores))
         var.explained = NULL
 
     } else {
