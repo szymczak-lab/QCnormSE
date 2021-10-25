@@ -13,6 +13,7 @@
 #' @param method Method to use for plotting: "quantileplot" (default),
 #' "boxplot", "violinplot".
 #' @param coef Numeric. Used in outlier definition (median +/- coef * IQR)
+#' @param label Character. Label of x or y axis (default: "expression value").
 #' @param title Character. Title of the plot.
 #'
 #' @return List with the following components:
@@ -47,6 +48,7 @@ plot_distribution <- function(se,
                               assay = 1,
                               method = "quantileplot",
                               coef = 5,
+                              label = "expression value",
                               title = paste("Distribution of expression",
                                             "values in each sample")) {
 
@@ -77,7 +79,7 @@ plot_distribution <- function(se,
             #            scale_color_viridis(discrete = TRUE) +
             scale_colour_viridis_d() +
             xlab("samples") +
-            ylab("expression value") +
+            ylab(label) +
             ggtitle(title) +
             theme_pubr() +
             theme(legend.position = "right",
@@ -104,7 +106,7 @@ plot_distribution <- function(se,
                          stat = "identity",
                          fill = "lightgray") +
             coord_flip() +
-            labs(y = "expression value") +
+            labs(y = label) +
             theme_pubr() +
             theme(axis.title.y = element_blank(),
                   axis.ticks.y = element_blank())
@@ -119,7 +121,7 @@ plot_distribution <- function(se,
         g = ggviolin(data = expr.long,
                      x = "sample",
                      y = "value",
-                     ylab = "expression value",
+                     ylab = label,
                      xlab = "",
                      add = "median_iqr",
                      fill = "lightgray",
