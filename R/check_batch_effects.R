@@ -66,9 +66,13 @@ check_batch_effects <- function(se,
 
     ## linear regression for each PC and phenotype variable
     ## P-value of F statistic and adjusted R-squared
-    cnames = sprintf("%s (%.2f%%)",
-                     colnames(scores),
-                     res.pca$var.explained * 100)
+    if (!is.null(res.pca$var.explained)) {
+        cnames = sprintf("%s (%.2f%%)",
+                         colnames(scores),
+                         res.pca$var.explained * 100)
+    } else {
+        cnames = colnames(scores)
+    }
 
     pval = abs.adj.r.squared = matrix(ncol = ncol(scores),
                                       nrow = ncol(pheno),
