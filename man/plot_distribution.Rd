@@ -9,6 +9,7 @@ plot_distribution(
   assay = 1,
   method = "quantileplot",
   coef = 5,
+  label = "expression value",
   title = paste("Distribution of expression", "values in each sample")
 )
 }
@@ -23,6 +24,8 @@ plotting.}
 "boxplot", "violinplot".}
 
 \item{coef}{Numeric. Used in outlier definition (median +/- coef * IQR)}
+
+\item{label}{Character. Label of x or y axis (default: "expression value").}
 
 \item{title}{Character. Title of the plot.}
 }
