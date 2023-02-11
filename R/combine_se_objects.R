@@ -71,20 +71,34 @@ combine_se_objects <- function(se.l,
     tab = table(colnames)
     colnames.all = names(tab)[tab == length(se.l)]
     if (length(colnames.all) == 0) {
-        stop("no overlapping colnames in colData found!")
+        warning("no overlapping colnames in colData found!")
+    }
+
+    ## identify common assays
+    assays = unlist(lapply(se.l, function(x) {
+        names(assays(x))}))
+    tab = table(assays)
+    assays.all = names(tab)[tab == length(se.l)]
+    if (length(assays.all) == 0) {
+        stop("no overlapping assay names found!")
     }
 
     ## merge SEs
     se.all = NULL
     for (i in seq_len(length(se.l))) {
         se = se.l[[i]][genes.all, ]
-        colData(se) = colData(se)[, colnames.all]
+        if (length(colnames.all) > 0) {
+            colData(se) = colData(se)[, colnames.all, drop = FALSE]
+        } else {
+            colData(se) = NULL
+        }
         if (length(annonames.all) > 0) {
             rowData(se) = rowData(se)[, annonames.all]
         } else {
             rowData(se) = NULL
         }
         metadata(se) = list()
+        assays(se) = assays(se)[assays.all]
         if (i == 1) {
             se.all = se
         } else {

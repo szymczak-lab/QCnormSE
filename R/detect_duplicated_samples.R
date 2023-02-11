@@ -29,7 +29,7 @@
 #' \item plot: Histogram as returned by \code{\link[ggpubr]{gghistogram}}
 #' }
 #'
-#' @importFrom coop covar
+#' @importFrom coop pcor
 #' @importFrom doppelgangR outlierFinder
 #' @importFrom methods as
 #' @importFrom stats cor sd
@@ -67,11 +67,14 @@ detect_duplicated_samples <- function(se,
 
     ## estimate pairwise correlation
     if (use.fast) {
-        expr.std = apply(expr, 2, function(x) {x / sd(x, na.rm = TRUE)})
-        cor.m = covar(expr.std,
-                      use = use)
-        dimnames(cor.m) = list(colnames(expr.std),
-                               colnames(expr.std))
+        if (cor.method != "pearson") {
+            warning(paste("only pearson correlation can be estimated with",
+            "option use.fast = TRUE\n"))
+        }
+        cor.m = pcor(expr,
+                     use = use)
+        dimnames(cor.m) = list(colnames(expr),
+                               colnames(expr))
     } else {
         cor.m = cor(expr,
                     method = cor.method,

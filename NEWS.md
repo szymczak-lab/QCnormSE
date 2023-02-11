@@ -1,17 +1,30 @@
 
 # QCnormSE 0.99.4.9000
 
-## bug fix
+## bug fixes
 
 check_sex()
 - set k to odd number <= minimal group size
 
 combine_se_objects()
 - check if column names are unique
-- add option to merge meta data
 
 extract_scan_date()
 - use correct sample file
+
+plot_mds_pca()
+- use C<no> for column names in MDS plot
+- percentage of variance explained only for PCA
+
+## modifications
+
+combine_se_objects()
+- add option to merge meta data
+- make function more flexible (e.g. no overlapping columns in colData possible, select common assays)
+
+plot_distribution()
+- add option to specify axis label
+
 
 # QCnormSE 0.99.4
 
