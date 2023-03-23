@@ -316,7 +316,7 @@ plot_mds_pca_2d <- function(res,
         g = g + guides(color = FALSE)
     }
     if (is.null(var.shape)) {
-        g = g + guides(shape = FALSE)
+        g = g + guides(shape = "none")
     }
     ## set colors
     if (!is.null(palette)) {
