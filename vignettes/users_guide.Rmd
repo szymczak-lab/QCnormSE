@@ -98,38 +98,27 @@ For this data set, GEO also provides the raw files (.CEL files). Thus, the date
 of scanning can be extracted using the function `extract_scan_date()` and is
 then stored as an additional column called `scan.date` in the `colData()` slot.
 Please note that this step will take a while since all the .CEL files have to
-be downloaded. It can be skipped for the further analyses presented in this
+be downloaded. It willn be skipped for the further analyses presented in this
 vignette.
 
-```{r, eval = TRUE, results="hide"}
+```{r, eval = TRUE, results="hide", eval = FALSE}
 se.ma = extract_scan_date(se = se.ma)
-```
-
-```{r}
 table(se.ma$scan.date)
-
 ```
 
 The scanning date can be used as a surrogate for unwanted technical variability 
 (batch effects) which can be automatically defined using the function 
-`define_batches()`. However, the `colData()` slot already contains batch 
-information which will be renamed so that it is not overwritten.
+`define_batches()`. 
 
-```{r, eval = TRUE}
-## rename
-se.ma$batch.original = se.ma$batch
-se.ma$batch = NULL
-
+```{r, eval = FALSE}
 ## define
 se.ma = define_batches(se = se.ma,
                        col.scan.date = "scan.date")
-
-## comparison
-table(original = se.ma$batch.original,
-      new = se.ma$batch)
 ```
 
-The comparison shows that both batch definitions are equivalent.
+However, the `colData()` slot already contains batch 
+information which is identical to the one defined by the scanning date. We will 
+thus use the original variable.
 
 ## Quality control
 
