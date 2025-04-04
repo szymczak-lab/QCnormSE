@@ -15,6 +15,7 @@
 #' @param center Logical. Should the data be centered by mean? (default: TRUE).
 #' @param scale Logical. Should the data be scaled by standard deviation?
 #' (default: FALSE).
+#' @param no.pc Integer. Number of components that are returned (default: 3).
 #'
 #' @return list with components scores (data.frame with components of PCA or
 #' MDS analysis) and var.explained (vector with explained variance; only for
@@ -39,7 +40,8 @@ calculate_mds_pca <- function(se,
                               method = "pca",
                               dist = "euclidean",
                               center = TRUE,
-                              scale = FALSE) {
+                              scale = FALSE,
+                              no.pc = 3) {
 
     if (is.character(assay) && !(assay %in% names(assays(se)))) {
         stop(paste("assay", assay, "not found!"))
@@ -70,8 +72,8 @@ calculate_mds_pca <- function(se,
         res = prcomp(na.omit(t(expr)),
                      center = FALSE,
                      scale = FALSE)
-        scores = res$x[, seq_len(3)]
-        var.explained = (res$sdev^2)[seq_len(3)] / sum(res$sdev^2)
+        scores = res$x[, seq_len(no.pc)]
+        var.explained = (res$sdev^2)[seq_len(no.pc)] / sum(res$sdev^2)
 
     } else if (method == "mds") {
 
@@ -81,7 +83,7 @@ calculate_mds_pca <- function(se,
         #     d = Dist(t(expr), method = dist)
         # }
         d = dist(t(expr))
-        fit = cmdscale(d, eig = TRUE, k = 3)
+        fit = cmdscale(d, eig = TRUE, k = no.pc)
         scores = fit$points
         colnames(scores) = paste0("C", 1:ncol(scores))
         var.explained = NULL

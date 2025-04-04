@@ -1,4 +1,11 @@
 
+# QCnormSE 0.99.4.9001
+
+## modifications
+
+calculate_mds_pca()
+- addiitonal argument no.pc for user defined number of components
+
 # QCnormSE 0.99.4.9000
 
 ## bug fixes

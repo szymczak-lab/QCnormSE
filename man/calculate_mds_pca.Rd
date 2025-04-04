@@ -10,7 +10,8 @@ calculate_mds_pca(
   method = "pca",
   dist = "euclidean",
   center = TRUE,
-  scale = FALSE
+  scale = FALSE,
+  no.pc = 3
 )
 }
 \arguments{
@@ -29,6 +30,8 @@ expression data to be used for dimensionality reduction.}
 
 \item{scale}{Logical. Should the data be scaled by standard deviation?
 (default: FALSE).}
+
+\item{no.pc}{Integer. Number of components that are returned (default: 3).}
 }
 \value{
 list with components scores (data.frame with components of PCA or
